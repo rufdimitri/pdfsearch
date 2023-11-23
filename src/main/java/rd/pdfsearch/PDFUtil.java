@@ -5,13 +5,11 @@ import com.lowagie.text.pdf.parser.PdfTextExtractor;
 
 import java.io.File;
 
-public class PDFEntity {
+public class PDFUtil {
 
-    void searchPdf(String fileName) {
-        try {
-            File src = new File(fileName);
-
-            PdfReader pdfReader = new PdfReader(src.getAbsolutePath());
+    public static void searchPdf(String fileName) {
+        File src = new File(fileName);
+        try (PdfReader pdfReader = new PdfReader(src.getAbsolutePath())) {
             int pageCount = pdfReader.getNumberOfPages();
             PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(pdfReader);
 
@@ -20,9 +18,7 @@ public class PDFEntity {
                 System.out.println(text);
                 System.out.println();
             }
-
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace(System.out);
         }
     }
