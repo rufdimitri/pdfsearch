@@ -15,7 +15,7 @@ public class App {
 
 
     public static void main(String[] args) {
-        String fileName = "C:/Users/Administrator/OneDrive/FI11_AE/_IHK/Pruefungen_Muster_00-21/2023_LoesungAP1Fr/AP1Fr2023 text.pdf";
+        String fileName = "C:\\!work\\TestPDFs\\test1.pdf";
         new PDFEntity().searchPdf(fileName);
     }
 }
