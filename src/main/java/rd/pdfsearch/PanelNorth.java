@@ -3,7 +3,6 @@ package rd.pdfsearch;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class PanelNorth extends JPanel {
     JEditorPane edPath;
@@ -11,19 +10,40 @@ public class PanelNorth extends JPanel {
     JEditorPane edKeywords;
     JButton btSearch;
     MainWindow parent;
+    JPanel pnDirectory = new JPanel();
     final JFileChooser fileChooser = new JFileChooser();
     {
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     }
 
     public PanelNorth(MainWindow parent) {
-        setLayout(new FlowLayout(FlowLayout.LEADING));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.parent = parent;
 
-        add(new JLabel("Search location:"));
+        initPnDirectory();
+        add(pnDirectory);
+
+        add(new JLabel("Keywords: "));
+
+        edKeywords = new JEditorPane();
+        add(edKeywords);
+
+        btSearch = new JButton("Search");
+        add(btSearch);
+    }
+
+    private void initPnDirectory() {
+        // TODO
+        // Using GridBagLayout
+        // https://docs.oracle.com/javase/tutorial/uiswing/layout/gridbag.html
+        GridBagLayout gbl = new GridBagLayout();
+        pnDirectory.setLayout(gbl);
+        GridBagConstraints constraints = gbl.getConstraints(pnDirectory);
+        gbl.setConstraints(pnDirectory, new GridBagConstraints());
+        pnDirectory.add(new JLabel("Search location:"));
         edPath = new JEditorPane();
-        edPath.setPreferredSize(new Dimension(parent.getInitWidth()/2, (int)edPath.getPreferredSize().getHeight()));
-        add(edPath, BorderLayout.WEST);
+        //edPath.setPreferredSize(new Dimension(parent.getInitWidth(), (int)edPath.getPreferredSize().getHeight()));
+        pnDirectory.add(edPath);
 
         btSelectPath = new JButton("...");
         btSelectPath.addActionListener((ActionEvent e) -> {
@@ -33,14 +53,6 @@ public class PanelNorth extends JPanel {
                 );
             }
         });
-        add(btSelectPath);
-
-        add(new JLabel("Keywords: "));
-
-        edKeywords = new JEditorPane();
-        add(edKeywords);
-
-        btSearch = new JButton("Search");
-        add(btSearch);
+        pnDirectory.add(btSelectPath);
     }
 }
