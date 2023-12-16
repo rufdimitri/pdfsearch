@@ -3,6 +3,7 @@ package rd.pdfsearch;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Map;
 
 public class PanelNorth extends JPanel {
     JEditorPane edPath;
@@ -10,40 +11,19 @@ public class PanelNorth extends JPanel {
     JEditorPane edKeywords;
     JButton btSearch;
     MainWindow parent;
-    JPanel pnDirectory = new JPanel();
     final JFileChooser fileChooser = new JFileChooser();
     {
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     }
 
     public PanelNorth(MainWindow parent) {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setLayout(new GridBagLayout());
         this.parent = parent;
 
-        initPnDirectory();
-        add(pnDirectory);
-
-        add(new JLabel("Keywords: "));
-
-        edKeywords = new JEditorPane();
-        add(edKeywords);
-
-        btSearch = new JButton("Search");
-        add(btSearch);
-    }
-
-    private void initPnDirectory() {
-        // TODO
-        // Using GridBagLayout
-        // https://docs.oracle.com/javase/tutorial/uiswing/layout/gridbag.html
-        GridBagLayout gbl = new GridBagLayout();
-        pnDirectory.setLayout(gbl);
-        GridBagConstraints constraints = gbl.getConstraints(pnDirectory);
-        gbl.setConstraints(pnDirectory, new GridBagConstraints());
-        pnDirectory.add(new JLabel("Search location:"));
+        add(new JLabel("Search location:"), constraints(Map.of("gridx", "0", "gridy", "0", "fill", String.valueOf(GridBagConstraints.NONE))));
         edPath = new JEditorPane();
         //edPath.setPreferredSize(new Dimension(parent.getInitWidth(), (int)edPath.getPreferredSize().getHeight()));
-        pnDirectory.add(edPath);
+        add(edPath, constraints(Map.of("gridx", "1", "gridy", "0", "fill", String.valueOf(GridBagConstraints.HORIZONTAL), "weightx", "0.5")));
 
         btSelectPath = new JButton("...");
         btSelectPath.addActionListener((ActionEvent e) -> {
@@ -53,6 +33,26 @@ public class PanelNorth extends JPanel {
                 );
             }
         });
-        pnDirectory.add(btSelectPath);
+        add(btSelectPath, constraints(Map.of("gridx", "2", "gridy", "0", "fill", String.valueOf(GridBagConstraints.NONE))));
+
+        add(new JLabel("Keywords: "), constraints(Map.of("gridx", "0", "gridy", "1", "fill", String.valueOf(GridBagConstraints.NONE))));
+
+        edKeywords = new JEditorPane();
+        add(edKeywords, constraints(Map.of("gridx", "1", "gridy", "1", "fill", String.valueOf(GridBagConstraints.HORIZONTAL), "weightx", "0.5")));
+
+        btSearch = new JButton("Search");
+        add(btSearch, constraints(Map.of("gridx", "0", "gridy", "2", "fill", String.valueOf(GridBagConstraints.NONE))));
+    }
+    static GridBagConstraints constraints(Map<String,String> values) {
+        GridBagConstraints constraints = new GridBagConstraints();
+        for (Map.Entry<String, String> entry : values.entrySet()) {
+            if (entry.getKey().equals("gridx")) constraints.gridx = Integer.parseInt(entry.getValue());
+            if (entry.getKey().equals("gridy")) constraints.gridy = Integer.parseInt(entry.getValue());
+            if (entry.getKey().equals("fill")) constraints.fill = Integer.parseInt(entry.getValue());
+            if (entry.getKey().equals("weightx")) constraints.weightx = Double.parseDouble(entry.getValue());
+            if (entry.getKey().equals("weighty")) constraints.weighty = Double.parseDouble(entry.getValue());
+        }
+
+        return constraints;
     }
 }
