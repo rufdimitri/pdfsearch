@@ -2,9 +2,7 @@ package rd.pdfsearch;
 
 import junit.framework.TestCase;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.util.Map;
 
 public class PanelNorthTest extends TestCase {
