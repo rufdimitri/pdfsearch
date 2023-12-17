@@ -103,54 +103,37 @@ public class GridBagContraintsBuilder {
 
 	public GridBagContraintsBuilder fillNone() {
 		this.fill = NONE;
+		this.weightX = 0;
+		this.weightY = 0;
 		return this;
 	}
 
-	public GridBagContraintsBuilder fillHorizontal() {
+	public GridBagContraintsBuilder fillHorizontal(double weightX) {
 		this.fill = HORIZONTAL;
+		this.weightX = weightX;
 		return this;
 	}
 
-	public GridBagContraintsBuilder fillVertical() {
+	public GridBagContraintsBuilder fillVertical(double weightY) {
 		this.fill = VERTICAL;
+		this.weightY = weightY;
 		return this;
 	}
 
-	public GridBagContraintsBuilder fillBoth() {
+	public GridBagContraintsBuilder fillBoth(double weightX, double weightY) {
 		this.fill = BOTH;
-		return this;
-	}
-
-	/**
-	 * Component expand horizontally on resize
-	 */
-	public GridBagContraintsBuilder expandHorizontal() {
-		this.weightX = 1;
-		this.fill = HORIZONTAL;
-		return this;
-	}
-
-	/**
-	 * Component expand vertically on resize
-	 */
-	public GridBagContraintsBuilder expandVertical() {
-		this.weightY = 1;
-		this.fill = VERTICAL;
-		return this;
-	}
-
-	/**
-	 * Component expand in both directions on resize
-	 */
-	public GridBagContraintsBuilder expandBoth() {
-		this.weightX = 1;
-		this.weightY = 1;
-		this.fill = BOTH;
+		this.weightX = weightX;
+		this.weightY = weightY;
 		return this;
 	}
 
 	public GridBagContraintsBuilder rowRemainder() {
 		this.width = REMAINDER;
+		return this;
+	}
+
+	public GridBagContraintsBuilder notRemainder() {
+		this.width = 1;
 		return this;
 	}
 

@@ -1,5 +1,7 @@
 package rd.pdfsearch;
 
+import com.ztz.gridbagconstraintsbuilder.GridBagContraintsBuilder;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,6 +11,7 @@ public class PanelNorth extends JPanel {
     JEditorPane edPath;
     JButton btSelectPath;
     JEditorPane edKeywords;
+    JEditorPane edKeywordSeparator;
     JButton btSearch;
     MainWindow parent;
     final JFileChooser fileChooser = new JFileChooser();
@@ -20,10 +23,15 @@ public class PanelNorth extends JPanel {
         setLayout(new GridBagLayout());
         this.parent = parent;
 
-        add(new JLabel("Search location:"), constraints(Map.of("gridx", "0", "gridy", "0", "fill", String.valueOf(GridBagConstraints.NONE))));
+
+        GridBagContraintsBuilder constraintsBuilder = new GridBagContraintsBuilder();
+        constraintsBuilder.x(0).y(0).insets(5);
+
+        add(new JLabel("Search location:"), constraintsBuilder.fillNone().width(1).build());
+
         edPath = new JEditorPane();
         //edPath.setPreferredSize(new Dimension(parent.getInitWidth(), (int)edPath.getPreferredSize().getHeight()));
-        add(edPath, constraints(Map.of("gridx", "1", "gridy", "0", "fill", String.valueOf(GridBagConstraints.HORIZONTAL), "weightx", "0.5")));
+        add(edPath, constraintsBuilder.newCol().fillHorizontal(1).width(2).build());
 
         btSelectPath = new JButton("...");
         btSelectPath.addActionListener((ActionEvent e) -> {
@@ -33,15 +41,21 @@ public class PanelNorth extends JPanel {
                 );
             }
         });
-        add(btSelectPath, constraints(Map.of("gridx", "2", "gridy", "0", "fill", String.valueOf(GridBagConstraints.NONE))));
 
-        add(new JLabel("Keywords: "), constraints(Map.of("gridx", "0", "gridy", "1", "fill", String.valueOf(GridBagConstraints.NONE))));
+        add(btSelectPath, constraintsBuilder.newCol().fillHorizontal(1).width(1).build());
 
-        edKeywords = new JEditorPane();
-        add(edKeywords, constraints(Map.of("gridx", "1", "gridy", "1", "fill", String.valueOf(GridBagConstraints.HORIZONTAL), "weightx", "0.5")));
+
+        add(new JLabel("Keywords: "), constraintsBuilder.newRow().fillNone().width(1).build());
+
+        edKeywords = new JEditorPane("text", "");
+        add(edKeywords, constraintsBuilder.newCol().fillHorizontal(1).width(1).build());
+
+        add(new JLabel("Keywords separator: "), constraintsBuilder.newCol().fillNone().width(1).build());
+        edKeywordSeparator = new JEditorPane("text", ",");
+        add(edKeywordSeparator, constraintsBuilder.newCol().fillNone().width(1).build());
 
         btSearch = new JButton("Search");
-        add(btSearch, constraints(Map.of("gridx", "0", "gridy", "2", "fill", String.valueOf(GridBagConstraints.NONE))));
+        add(btSearch, constraintsBuilder.newRow().fillHorizontal(1).width(0).build());
     }
     static GridBagConstraints constraints(Map<String,String> values) {
         GridBagConstraints constraints = new GridBagConstraints();
