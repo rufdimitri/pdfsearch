@@ -55,7 +55,7 @@ public class PanelNorth extends JPanel {
         add(edKeywordSeparator, constraintsBuilder.newCol().fillNone().width(1).build());
 
         btSearch = new JButton("Search");
-        add(btSearch, constraintsBuilder.newRow().fillHorizontal(1).width(0).build());
+        add(btSearch, constraintsBuilder.newRow().fillHorizontal(1).width(1).build());
     }
     static GridBagConstraints constraints(Map<String,String> values) {
         GridBagConstraints constraints = new GridBagConstraints();
