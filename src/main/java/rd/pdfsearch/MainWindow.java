@@ -2,12 +2,16 @@ package rd.pdfsearch;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.font.TextAttribute;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainWindow extends JFrame {
     private JPanel panelNorth;
     private JPanel panelCenter;
     private int initWidth;
     private int initHeight;
+
     public MainWindow(String title, int initWidth, int initHeight) {
         super(title);
         setSize(initWidth, initHeight);
@@ -22,6 +26,14 @@ public class MainWindow extends JFrame {
 
         panelCenter = new PanelCenter(this);
         add(panelCenter);
+
+        //Set Font for all child Components
+        Map<TextAttribute, Object> fontAtrributes = new HashMap<TextAttribute, Object>();
+        fontAtrributes.put(TextAttribute.FAMILY, "Tahoma");
+        fontAtrributes.put(TextAttribute.SIZE, 14);
+        Font font1 = Font.getFont(fontAtrributes);
+
+        SwingUtil.changeFont(this, font1);
 
         setVisible(true);
     }
