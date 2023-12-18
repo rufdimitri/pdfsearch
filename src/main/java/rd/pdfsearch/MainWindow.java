@@ -28,10 +28,10 @@ public class MainWindow extends JFrame {
         add(panelCenter);
 
         //Set Font for all child Components
-        Map<TextAttribute, Object> fontAtrributes = new HashMap<TextAttribute, Object>();
-        fontAtrributes.put(TextAttribute.FAMILY, "Tahoma");
-        fontAtrributes.put(TextAttribute.SIZE, 14);
-        Font font1 = Font.getFont(fontAtrributes);
+        Map<TextAttribute, Object> fontAttributes = new HashMap<TextAttribute, Object>();
+        fontAttributes.put(TextAttribute.FAMILY, "Tahoma");
+        fontAttributes.put(TextAttribute.SIZE, 14);
+        Font font1 = Font.getFont(fontAttributes);
 
         SwingUtil.changeFont(this, font1);
 
