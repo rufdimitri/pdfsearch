@@ -54,7 +54,7 @@ public class MainWindow extends JFrame {
         add(panelCenter);
 
         //Set Font for all child Components
-        Map<TextAttribute, Object> fontAttributes = new HashMap<TextAttribute, Object>();
+        Map<TextAttribute, Object> fontAttributes = new HashMap<>();
         fontAttributes.put(TextAttribute.FAMILY, "Tahoma");
         fontAttributes.put(TextAttribute.SIZE, 14);
         Font font1 = Font.getFont(fontAttributes);

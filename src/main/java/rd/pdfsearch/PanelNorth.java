@@ -58,16 +58,5 @@ public class PanelNorth extends JPanel {
         btSearch = new JButton("Search");
         add(btSearch, constraintsBuilder.newRow().fillNone().width(1).build());
     }
-    static GridBagConstraints constraints(Map<String,String> values) {
-        GridBagConstraints constraints = new GridBagConstraints();
-        for (Map.Entry<String, String> entry : values.entrySet()) {
-            if (entry.getKey().equals("gridx")) constraints.gridx = Integer.parseInt(entry.getValue());
-            if (entry.getKey().equals("gridy")) constraints.gridy = Integer.parseInt(entry.getValue());
-            if (entry.getKey().equals("fill")) constraints.fill = Integer.parseInt(entry.getValue());
-            if (entry.getKey().equals("weightx")) constraints.weightx = Double.parseDouble(entry.getValue());
-            if (entry.getKey().equals("weighty")) constraints.weighty = Double.parseDouble(entry.getValue());
-        }
-
-        return constraints;
-    }
+    
 }

@@ -17,11 +17,11 @@ public class JsonUtil <T> {
     }
 
     public static <T> JsonUtil<T> of (Class<T> objectClass) {
-        return new JsonUtil<T>(objectClass);
+        return new JsonUtil<>(objectClass);
     }
 
     public T unmarshallFromFile(String fileName) {
-        try (Reader reader = new FileReader(fileName, StandardCharsets.UTF_8);) {
+        try (Reader reader = new FileReader(fileName, StandardCharsets.UTF_8)) {
             GsonBuilder builder = new GsonBuilder();
             builder.setPrettyPrinting();
             Gson gson = builder.create();
@@ -33,7 +33,7 @@ public class JsonUtil <T> {
     }
 
     public void marshallToFile(String fileName, T object) {
-        try (Writer writer = new FileWriter(fileName, StandardCharsets.UTF_8);) {
+        try (Writer writer = new FileWriter(fileName, StandardCharsets.UTF_8)) {
             GsonBuilder builder = new GsonBuilder();
             builder.setPrettyPrinting();
             Gson gson = builder.create();
