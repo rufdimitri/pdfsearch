@@ -13,17 +13,12 @@ public class PanelNorth extends JPanel {
     final JTextField tfKeywordSeparator;
     final JButton btSearch;
     final MainWindow parent;
-
     final JFileChooser fileChooser = new JFileChooser();
-
-    {
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    }
 
     public PanelNorth(MainWindow parent) {
         setLayout(new GridBagLayout());
         this.parent = parent;
-
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         GridBagContraintsBuilder constraintsBuilder = new GridBagContraintsBuilder();
         constraintsBuilder.x(0).y(0).insets(5);
