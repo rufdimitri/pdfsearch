@@ -4,14 +4,15 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.parser.PdfTextExtractor;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class PDFUtil {
 
-    public static Map<String,SearchResult> searchInPdf(String fileName, List<String> keywords) {
-        Map<String,SearchResult> map = new HashMap<>();
+    public static Map<String,List<SearchResult>> searchInPdf(String fileName, List<String> keywords) {
+        Map<String,List<SearchResult>> map = new HashMap<>();
         File src = new File(fileName);
         try (PdfReader pdfReader = new PdfReader(src.getAbsolutePath())) {
             int pageCount = pdfReader.getNumberOfPages();
@@ -22,7 +23,8 @@ public class PDFUtil {
                 for (String keyword : keywords) {
                     int pos = pageText.indexOf(keyword);
                     if (pos >= 0) {
-                        map.put(keyword, new SearchResult(charCount + pos, pageId+1));
+                        List<SearchResult> searchResults = map.getOrDefault(keyword, new ArrayList<>());
+                        searchResults.add(new SearchResult(charCount + pos, pageId+1));
                     }
                 }
                 charCount += pageText.length();
