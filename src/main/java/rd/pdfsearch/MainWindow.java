@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainWindow extends JFrame {
-    private JPanel panelNorth;
-    private JPanel panelCenter;
-    private int initWidth;
-    private int initHeight;
+    final JPanel panelNorth;
+    final JPanel panelCenter;
+    final int initWidth;
+    final int initHeight;
 
     public MainWindow(String title, int initWidth, int initHeight) {
         super(title);
