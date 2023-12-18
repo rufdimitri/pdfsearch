@@ -10,7 +10,7 @@ public class PanelCenter extends JPanel {
     public PanelCenter(MainWindow parent) {
         setLayout(new BorderLayout());
         this.parent = parent;
-        //setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
         taContent = new JTextArea();
         taContent.setMargin(new Insets(5,5,5,5));
