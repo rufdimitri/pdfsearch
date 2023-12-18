@@ -1,27 +1,51 @@
 package rd.pdfsearch;
 
+import rd.util.JsonUtil;
 import rd.util.SwingUtil;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.font.TextAttribute;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainWindow extends JFrame {
-    final JPanel panelNorth;
-    final JPanel panelCenter;
+    final PanelNorth panelNorth;
+    final PanelCenter panelCenter;
     final int initWidth;
     final int initHeight;
+    final String preferencesFile = "preferences.pdfsearch";
+    Preferences preferences;
 
     public MainWindow(String title, int initWidth, int initHeight) {
         super(title);
+        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            exception.printStackTrace(new PrintStream(baos, true, StandardCharsets.UTF_8));
+            String output = baos.toString(StandardCharsets.UTF_8);
+            JOptionPane.showMessageDialog(null, "Error: " + output, "PdfSearch", JOptionPane.ERROR_MESSAGE);
+        });
         setSize(initWidth, initHeight);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(new MainWindowWindowListener(this));
         this.initWidth = initWidth;
         this.initHeight = initHeight;
         setLayout(new BorderLayout());
+
+        //Load preferences
+        try {
+            preferences = JsonUtil.of(Preferences.class).unmarshallFromFile(preferencesFile);
+        } catch (Exception exception) {
+            if (exception.getCause().getClass() != FileNotFoundException.class) throw exception;
+
+            preferences = new Preferences();
+            preferences.setKeywordsSeparator(",");
+        }
 
         panelNorth = new PanelNorth(this);
         add(panelNorth, BorderLayout.NORTH);
@@ -48,4 +72,9 @@ public class MainWindow extends JFrame {
         return initHeight;
     }
 
+    public void updatePreferences() {
+        preferences.setSearchLocation(panelNorth.tfSearchLocation.getText());
+        preferences.setKeywords(panelNorth.tfKeywords.getText());
+        preferences.setKeywordsSeparator(panelNorth.tfKeywordSeparator.getText());
+    }
 }
