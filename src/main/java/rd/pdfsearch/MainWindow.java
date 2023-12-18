@@ -1,5 +1,7 @@
 package rd.pdfsearch;
 
+import rd.util.SwingUtil;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.font.TextAttribute;

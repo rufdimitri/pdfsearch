@@ -1,4 +1,4 @@
-package rd.pdfsearch;
+package rd.util;
 
 import java.awt.*;
 
