@@ -16,6 +16,7 @@ public class PanelNorth extends JPanel {
     final MainWindow parent;
 
     final JFileChooser fileChooser = new JFileChooser();
+
     {
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     }
@@ -31,7 +32,7 @@ public class PanelNorth extends JPanel {
         add(new JLabel("Search location:"), constraintsBuilder.fillNone().width(1).build());
 
         tfPath = new JTextField();
-        //edPath.setPreferredSize(new Dimension(parent.getInitWidth(), (int)edPath.getPreferredSize().getHeight()));
+//        tfPath.setSize(parent.getInitWidth(), parent.getInitHeight());
         add(tfPath, constraintsBuilder.newCol().fillHorizontal(1).width(2).build());
 
         btSelectPath = new JButton("...");
@@ -43,7 +44,7 @@ public class PanelNorth extends JPanel {
             }
         });
 
-        add(btSelectPath, constraintsBuilder.newCol().fillHorizontal(1).width(1).build());
+        add(btSelectPath, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
 
 
         add(new JLabel("Keywords: "), constraintsBuilder.newRow().fillNone().width(1).build());
@@ -53,10 +54,10 @@ public class PanelNorth extends JPanel {
 
         add(new JLabel("Keywords separator: "), constraintsBuilder.newCol().fillNone().width(1).build());
         tfKeywordSeparator = new JTextField(",");
-        add(tfKeywordSeparator, constraintsBuilder.newCol().fillNone().width(1).build());
+        add(tfKeywordSeparator, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
 
         btSearch = new JButton("Search");
-        add(btSearch, constraintsBuilder.newRow().fillHorizontal(1).width(1).build());
+        add(btSearch, constraintsBuilder.newRow().fillNone().width(1).build());
     }
     static GridBagConstraints constraints(Map<String,String> values) {
         GridBagConstraints constraints = new GridBagConstraints();
