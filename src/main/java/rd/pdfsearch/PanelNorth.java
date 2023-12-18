@@ -1,19 +1,20 @@
 package rd.pdfsearch;
 
 import com.ztz.gridbagconstraintsbuilder.GridBagContraintsBuilder;
+import rd.pdfsearch.listeners.BtSearchActionListener;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class PanelNorth extends JPanel {
-    final JTextField tfSearchLocation;
-    final JButton btSelectPath;
-    final JTextField tfKeywords;
-    final JTextField tfKeywordSeparator;
-    final JButton btSearch;
-    final MainWindow parent;
-    final JFileChooser fileChooser = new JFileChooser();
+    public final JTextField tfSearchLocation;
+    public final JButton btSelectPath;
+    public final JTextField tfKeywords;
+    public final JTextField tfKeywordSeparator;
+    public final JButton btSearch;
+    public final MainWindow parent;
+    public final JFileChooser fileChooser = new JFileChooser();
 
     public PanelNorth(MainWindow parent) {
         setLayout(new GridBagLayout());
@@ -50,6 +51,7 @@ public class PanelNorth extends JPanel {
         add(tfKeywordSeparator, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
 
         btSearch = new JButton("Search");
+        btSearch.addActionListener(new BtSearchActionListener(this));
         add(btSearch, constraintsBuilder.newRow().fillNone().width(1).build());
     }
 

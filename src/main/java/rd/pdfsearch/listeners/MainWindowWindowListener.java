@@ -1,5 +1,7 @@
-package rd.pdfsearch;
+package rd.pdfsearch.listeners;
 
+import rd.pdfsearch.MainWindow;
+import rd.pdfsearch.Preferences;
 import rd.util.JsonUtil;
 
 import java.awt.event.WindowEvent;

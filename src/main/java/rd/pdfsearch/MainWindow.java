@@ -1,5 +1,6 @@
 package rd.pdfsearch;
 
+import rd.pdfsearch.listeners.MainWindowWindowListener;
 import rd.util.JsonUtil;
 import rd.util.SwingUtil;
 
@@ -14,12 +15,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainWindow extends JFrame {
-    final PanelNorth panelNorth;
-    final PanelCenter panelCenter;
-    final int initWidth;
-    final int initHeight;
-    final String preferencesFile = "preferences.pdfsearch";
-    Preferences preferences;
+    public final PanelNorth panelNorth;
+    public final PanelCenter panelCenter;
+    public final int initWidth;
+    public final int initHeight;
+    public final String preferencesFile = "preferences.pdfsearch";
+    public Preferences preferences;
 
     public MainWindow(String title, int initWidth, int initHeight) {
         super(title);
