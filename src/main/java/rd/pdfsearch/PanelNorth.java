@@ -5,7 +5,6 @@ import com.ztz.gridbagconstraintsbuilder.GridBagContraintsBuilder;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.Map;
 
 public class PanelNorth extends JPanel {
     final JTextField tfSearchLocation;
@@ -58,5 +57,5 @@ public class PanelNorth extends JPanel {
         btSearch = new JButton("Search");
         add(btSearch, constraintsBuilder.newRow().fillNone().width(1).build());
     }
-    
+
 }
