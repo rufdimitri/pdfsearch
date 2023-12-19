@@ -4,30 +4,33 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.parser.PdfTextExtractor;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PDFUtil {
 
-    public static Map<String,List<SearchResult>> searchInPdf(String fileName, List<String> keywords) {
+    //TODO method to search recursive in a folder
+
+    //TODO save filename in search results
+    public static Map<String,List<SearchResult>> searchInPdf(String fileName, Collection<String> keywords) {
         Map<String,List<SearchResult>> map = new HashMap<>();
         File src = new File(fileName);
         try (PdfReader pdfReader = new PdfReader(src.getAbsolutePath())) {
             int pageCount = pdfReader.getNumberOfPages();
             PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(pdfReader);
-            int charCount = 0;
-            for (int pageId = 0; pageId < pageCount; pageId++) {
-                String pageText = pdfTextExtractor.getTextFromPage(pageId);
+            int pagePosition = 0;
+            for (int pageNr = 1; pageNr <= pageCount; pageNr++) {
+                String pageText = pdfTextExtractor.getTextFromPage(pageNr)
+                        .toLowerCase();
+
                 for (String keyword : keywords) {
-                    int pos = pageText.indexOf(keyword);
-                    if (pos >= 0) {
+                    int position = pageText.indexOf(keyword);
+                    if (position >= 0) {
                         List<SearchResult> searchResults = map.getOrDefault(keyword, new ArrayList<>());
-                        searchResults.add(new SearchResult(charCount + pos, pageId+1));
+                        searchResults.add(new SearchResult(position, pagePosition, pageNr));
+                        map.putIfAbsent(keyword, searchResults);
                     }
                 }
-                charCount += pageText.length();
+                pagePosition += pageText.length();
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
