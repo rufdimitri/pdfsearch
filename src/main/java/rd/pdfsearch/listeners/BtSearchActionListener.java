@@ -31,7 +31,8 @@ public class BtSearchActionListener implements ActionListener {
         }
 
         //TODO call recursive subfolders
-        Map<String, List<SearchResult>> searchResults = PDFUtil.searchInPdf(filename, List.of(keywordsArray));
-        System.out.println(searchResults);
+        PDFUtil.searchInMultipleFiles(filename, ".pdf", List.of(keywordsArray));
+//        Map<String, List<SearchResult>> searchResults = PDFUtil.searchInPdf(filename, List.of(keywordsArray));
+//        System.out.println(searchResults);
     }
 }

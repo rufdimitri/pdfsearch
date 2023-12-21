@@ -4,11 +4,31 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.parser.PdfTextExtractor;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class PDFUtil {
-
     //TODO method to search recursive in a folder
+
+    /**
+     *
+     * @param path path where to search for files
+     * @param fileExtension filter: only search in files with this extension (e.g  ".pdf"). Leave empty string to ignore this parameter
+     * @param keywords list of keywords to search for
+     */
+    public static void searchInMultipleFiles(String path, String fileExtension, Collection<String> keywords) {
+        try (Stream<Path> stream = Files.walk(Paths.get(path))) {
+            stream.filter(Files::isRegularFile)
+                    .filter(filePath -> filePath.toString().endsWith(fileExtension))
+                    .forEach(System.out::println);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     //TODO save filename in search results
     public static Map<String,List<SearchResult>> searchInPdf(String fileName, Collection<String> keywords) {
