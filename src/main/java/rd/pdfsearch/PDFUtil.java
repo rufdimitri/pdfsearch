@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PDFUtil {
@@ -22,9 +23,11 @@ public class PDFUtil {
      */
     public static void searchInMultipleFiles(String path, String fileExtension, Collection<String> keywords) {
         try (Stream<Path> stream = Files.walk(Paths.get(path))) {
-            stream.filter(Files::isRegularFile)
-                    .filter(filePath -> filePath.toString().endsWith(fileExtension))
-                    .forEach(System.out::println);
+            List<String> files = stream.filter(Files::isRegularFile)
+                    .map(Path::toString)
+                    .filter(string -> string.endsWith(fileExtension))
+                    .toList();
+            //TODO foreach files
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
