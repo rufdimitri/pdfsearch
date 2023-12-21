@@ -28,6 +28,7 @@ public class MainWindow extends JFrame {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             exception.printStackTrace(new PrintStream(baos, true, StandardCharsets.UTF_8));
             String output = baos.toString(StandardCharsets.UTF_8);
+            System.err.println(output);
             JOptionPane.showMessageDialog(null, "Error: " + output, "PdfSearch", JOptionPane.ERROR_MESSAGE);
         });
         setSize(initWidth, initHeight);
