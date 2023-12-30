@@ -5,12 +5,9 @@ import com.lowagie.text.pdf.parser.PdfTextExtractor;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PDFUtil {
     //TODO method to search recursive in a folder
@@ -22,12 +19,32 @@ public class PDFUtil {
      * @param keywords list of keywords to search for
      */
     public static void searchInMultipleFiles(String path, String fileExtension, Collection<String> keywords) {
-        try (Stream<Path> stream = Files.walk(Paths.get(path))) {
-            List<String> files = stream.filter(Files::isRegularFile)
-                    .map(Path::toString)
-                    .filter(string -> string.endsWith(fileExtension))
-                    .toList();
-            //TODO foreach files
+        try {
+            Files.walkFileTree(Paths.get(path), new FileVisitor<>() {
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (Files.isRegularFile(file) && file.toString().endsWith(fileExtension)) {
+                        System.out.println("file = " + file.toString());
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                    System.err.println(exc.toString() + " / At file: " + file);
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
