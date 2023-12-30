@@ -2,6 +2,7 @@ package rd.pdfsearch;
 
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.parser.PdfTextExtractor;
+import rd.pdfsearch.model.SearchResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,10 +51,9 @@ public class PDFUtil {
         }
     }
 
-    //TODO save filename in search results
-    public static Map<String,List<SearchResult>> searchInPdf(String fileName, Collection<String> keywords) {
+    public static Map<String,List<SearchResult>> searchInPdf(String filename, Collection<String> keywords) {
         Map<String,List<SearchResult>> map = new HashMap<>();
-        File src = new File(fileName);
+        File src = new File(filename);
         try (PdfReader pdfReader = new PdfReader(src.getAbsolutePath())) {
             int pageCount = pdfReader.getNumberOfPages();
             PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(pdfReader);
@@ -66,7 +66,7 @@ public class PDFUtil {
                     int position = pageText.indexOf(keyword);
                     if (position >= 0) {
                         List<SearchResult> searchResults = map.getOrDefault(keyword, new ArrayList<>());
-                        searchResults.add(new SearchResult(position, pagePosition, pageNr));
+                        searchResults.add(new SearchResult(filename, position, pagePosition, pageNr));
                         map.putIfAbsent(keyword, searchResults);
                     }
                 }

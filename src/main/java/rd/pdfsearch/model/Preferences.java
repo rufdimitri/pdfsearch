@@ -1,4 +1,4 @@
-package rd.pdfsearch;
+package rd.pdfsearch.model;
 
 public class Preferences {
     private String searchLocation;

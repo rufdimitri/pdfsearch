@@ -2,12 +2,10 @@ package rd.pdfsearch.listeners;
 
 import rd.pdfsearch.PDFUtil;
 import rd.pdfsearch.PanelNorth;
-import rd.pdfsearch.SearchResult;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Map;
 
 public class BtSearchActionListener implements ActionListener {
     private final PanelNorth panelNorth;

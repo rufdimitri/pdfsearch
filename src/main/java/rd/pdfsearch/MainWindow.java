@@ -1,6 +1,7 @@
 package rd.pdfsearch;
 
 import rd.pdfsearch.listeners.MainWindowWindowListener;
+import rd.pdfsearch.model.Preferences;
 import rd.util.JsonUtil;
 import rd.util.SwingUtil;
 
