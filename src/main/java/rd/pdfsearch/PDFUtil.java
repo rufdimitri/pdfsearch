@@ -32,6 +32,18 @@ public class PDFUtil {
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     if (Files.isRegularFile(file) && file.toString().endsWith(fileExtension)) {
                         System.out.println("file = " + file.toString());
+                        SearchResult searchResult = searchInPdf(file.toString(), keywords);
+
+                        //TODO display result:
+                        System.out.format("found %d entries \n", searchResult.searchResultsPerWord().size());
+                        for (Map.Entry<String, List<WordPosition>> wordSearchResult : searchResult.searchResultsPerWord().entrySet()) {
+                            System.out.println("found word: " + wordSearchResult.getKey());
+                            for (WordPosition wordPosition : wordSearchResult.getValue()) {
+                                System.out.println("  at " + wordPosition.getAbsolutePosition() + " page #: " + wordPosition.pageNumber());
+                            }
+
+                        }
+
                     }
                     return FileVisitResult.CONTINUE;
                 }
