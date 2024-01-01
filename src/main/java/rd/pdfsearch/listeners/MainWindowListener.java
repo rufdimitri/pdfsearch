@@ -7,10 +7,10 @@ import rd.util.JsonUtil;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-public class MainWindowWindowListener implements WindowListener {
+public class MainWindowListener implements WindowListener {
     final MainWindow mainWindow;
 
-    public MainWindowWindowListener(MainWindow mainWindow) {
+    public MainWindowListener(MainWindow mainWindow) {
         this.mainWindow = mainWindow;
     }
 
@@ -21,8 +21,7 @@ public class MainWindowWindowListener implements WindowListener {
 
     @Override
     public void windowClosing(WindowEvent e) {
-        this.mainWindow.updatePreferences();
-        JsonUtil.of(Preferences.class).marshallToFile(this.mainWindow.preferencesFile, this.mainWindow.preferences);
+        this.mainWindow.savePreferences();
         this.mainWindow.dispose();
     }
 

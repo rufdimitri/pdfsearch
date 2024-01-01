@@ -13,12 +13,12 @@ public class PanelNorth extends JPanel {
     public final JTextField tfKeywords;
     public final JTextField tfKeywordSeparator;
     public final JButton btSearch;
-    public final MainWindow parent;
+    public final MainWindow mainWindow;
     public final JFileChooser fileChooser = new JFileChooser();
 
-    public PanelNorth(MainWindow parent) {
+    public PanelNorth(MainWindow mainWindow) {
         setLayout(new GridBagLayout());
-        this.parent = parent;
+        this.mainWindow = mainWindow;
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         GridBagContraintsBuilder constraintsBuilder = new GridBagContraintsBuilder();
@@ -26,7 +26,7 @@ public class PanelNorth extends JPanel {
 
         add(new JLabel("Search location:"), constraintsBuilder.fillNone().width(1).build());
 
-        tfSearchLocation = new JTextField(parent.preferences.getSearchLocation());
+        tfSearchLocation = new JTextField(mainWindow.preferences.getSearchLocation());
         add(tfSearchLocation, constraintsBuilder.newCol().fillHorizontal(1).width(2).build());
 
         btSelectPath = new JButton("...");
@@ -43,15 +43,15 @@ public class PanelNorth extends JPanel {
 
         add(new JLabel("Keywords: "), constraintsBuilder.newRow().fillNone().width(1).build());
 
-        tfKeywords = new JTextField(parent.preferences.getKeywords());
+        tfKeywords = new JTextField(mainWindow.preferences.getKeywords());
         add(tfKeywords, constraintsBuilder.newCol().fillHorizontal(1).width(1).build());
 
         add(new JLabel("Keywords separator: "), constraintsBuilder.newCol().fillNone().width(1).build());
-        tfKeywordSeparator = new JTextField(parent.preferences.getKeywordsSeparator());
+        tfKeywordSeparator = new JTextField(mainWindow.preferences.getKeywordsSeparator());
         add(tfKeywordSeparator, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
 
         btSearch = new JButton("Search");
-        btSearch.addActionListener(new BtSearchActionListener(this));
+        btSearch.addActionListener(new BtSearchActionListener(mainWindow));
         add(btSearch, constraintsBuilder.newRow().fillNone().width(1).build());
     }
 

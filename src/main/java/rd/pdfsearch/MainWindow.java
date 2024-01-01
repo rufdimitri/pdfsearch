@@ -1,6 +1,6 @@
 package rd.pdfsearch;
 
-import rd.pdfsearch.listeners.MainWindowWindowListener;
+import rd.pdfsearch.listeners.MainWindowListener;
 import rd.pdfsearch.model.Preferences;
 import rd.util.JsonUtil;
 import rd.util.SwingUtil;
@@ -35,7 +35,7 @@ public class MainWindow extends JFrame {
         setSize(initWidth, initHeight);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new MainWindowWindowListener(this));
+        addWindowListener(new MainWindowListener(this));
         this.initWidth = initWidth;
         this.initHeight = initHeight;
         setLayout(new BorderLayout());
@@ -75,9 +75,11 @@ public class MainWindow extends JFrame {
         return initHeight;
     }
 
-    public void updatePreferences() {
+    public void savePreferences() {
         preferences.setSearchLocation(panelNorth.tfSearchLocation.getText());
         preferences.setKeywords(panelNorth.tfKeywords.getText());
         preferences.setKeywordsSeparator(panelNorth.tfKeywordSeparator.getText());
+
+        JsonUtil.of(Preferences.class).marshallToFile(preferencesFile, preferences);
     }
 }
