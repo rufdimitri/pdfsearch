@@ -1,15 +1,7 @@
 package rd.pdfsearch.model;
 
-/**
- * @param filename     path to the file where this search entry was found
- * @param position     position of search-result relative to begin of current page (represents number of characters)
- * @param pagePosition position of current page in document (represents number of characters from document begin to current page)
- * @param pageNumber   page in document
- */
-public record SearchResult(String filename, int position, int pagePosition, int pageNumber) {
+import java.util.List;
+import java.util.Map;
 
-    public int getAbsolutePosition() {
-        return position + pagePosition;
-    }
-
+public record SearchResult(String filename, Map<String, List<WordPosition>> searchResultsPerWord) {
 }

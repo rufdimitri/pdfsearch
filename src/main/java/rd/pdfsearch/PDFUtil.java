@@ -3,6 +3,7 @@ package rd.pdfsearch;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.parser.PdfTextExtractor;
 import rd.pdfsearch.model.SearchResult;
+import rd.pdfsearch.model.WordPosition;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,8 +52,8 @@ public class PDFUtil {
         }
     }
 
-    public static Map<String,List<SearchResult>> searchInPdf(String filename, Collection<String> keywords) {
-        Map<String,List<SearchResult>> map = new HashMap<>();
+    public static SearchResult searchInPdf(String filename, Collection<String> keywords) {
+        Map<String,List<WordPosition>> wordPositionsPerWord = new HashMap<>();
         File src = new File(filename);
         try (PdfReader pdfReader = new PdfReader(src.getAbsolutePath())) {
             int pageCount = pdfReader.getNumberOfPages();
@@ -65,9 +66,9 @@ public class PDFUtil {
                 for (String keyword : keywords) {
                     int position = pageText.indexOf(keyword);
                     if (position >= 0) {
-                        List<SearchResult> searchResults = map.getOrDefault(keyword, new ArrayList<>());
-                        searchResults.add(new SearchResult(filename, position, pagePosition, pageNr));
-                        map.putIfAbsent(keyword, searchResults);
+                        List<WordPosition> searchResults = wordPositionsPerWord.getOrDefault(keyword, new ArrayList<>());
+                        searchResults.add(new WordPosition(position, pagePosition, pageNr));
+                        wordPositionsPerWord.putIfAbsent(keyword, searchResults);
                     }
                 }
                 pagePosition += pageText.length();
@@ -75,6 +76,6 @@ public class PDFUtil {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return map;
+        return new SearchResult(filename, wordPositionsPerWord);
     }
 }
