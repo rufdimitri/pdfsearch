@@ -18,6 +18,7 @@ import java.util.Map;
 public class MainWindow extends JFrame {
     public final PanelNorth panelNorth;
     public final PanelCenter panelCenter;
+    public final PanelSouth panelSouth;
     public final int initWidth;
     public final int initHeight;
     public final String preferencesFile = "preferences.pdfsearch";
@@ -54,7 +55,10 @@ public class MainWindow extends JFrame {
         add(panelNorth, BorderLayout.NORTH);
 
         panelCenter = new PanelCenter(this);
-        add(panelCenter);
+        add(panelCenter, BorderLayout.CENTER);
+
+        panelSouth = new PanelSouth(this);
+        add(panelSouth, BorderLayout.SOUTH);
 
         //Set Font for all child Components
         Map<TextAttribute, Object> fontAttributes = new HashMap<>();
