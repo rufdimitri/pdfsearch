@@ -44,7 +44,7 @@ public class BtSearchActionListener implements ActionListener {
         });
 
         mainWindow.executorService.submit(() -> {
-            while (!mainWindow.fileSearchFuture.isDone()) {
+            while (!mainWindow.fileSearchFuture.isDone() || !outputQueue.isEmpty()) {
                 try {
                     String outputLine = outputQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (!Objects.isNull(outputLine)) {
@@ -57,7 +57,7 @@ public class BtSearchActionListener implements ActionListener {
         });
 
         mainWindow.executorService.submit(() -> {
-            while (!mainWindow.fileSearchFuture.isDone()) {
+            while (!mainWindow.fileSearchFuture.isDone() || !errorQueue.isEmpty()) {
                 try {
                     Throwable error = errorQueue.poll(100, TimeUnit.MILLISECONDS);;
                     if (!Objects.isNull(error)) {

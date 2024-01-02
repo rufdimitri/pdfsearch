@@ -15,7 +15,7 @@ public class PanelSouth extends JPanel {
         outputList = new JList<String>(); //data has type Object[]
         outputList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         outputList.setLayoutOrientation(JList.VERTICAL);
-        outputList.setVisibleRowCount(5);
+        outputList.setVisibleRowCount(15);
 
         JScrollPane scrollPane = new JScrollPane(outputList);
 
