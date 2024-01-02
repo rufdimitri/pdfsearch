@@ -12,10 +12,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 public class PDFUtil {
-    //TODO method to search recursive in a folder
-
     /**
-     *
      * @param path path where to search for files
      * @param fileExtension filter: only search in files with this extension (e.g  ".pdf"). Leave empty string to ignore this parameter
      * @param keywords list of keywords to search for
@@ -30,21 +27,29 @@ public class PDFUtil {
 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    if (Files.isRegularFile(file) && file.toString().endsWith(fileExtension)) {
-                        System.out.println("file = " + file.toString());
-                        SearchResult searchResult = searchInPdf(file.toString(), keywords);
+                    if (!Files.isRegularFile(file) || !file.toString().endsWith(fileExtension))
+                        return FileVisitResult.CONTINUE;
 
-                        //TODO display result:
-                        System.out.format("found %d entries \n", searchResult.searchResultsPerWord().size());
-                        for (Map.Entry<String, List<WordPosition>> wordSearchResult : searchResult.searchResultsPerWord().entrySet()) {
-                            System.out.println("found word: " + wordSearchResult.getKey());
-                            for (WordPosition wordPosition : wordSearchResult.getValue()) {
-                                System.out.println("  at " + wordPosition.getAbsolutePosition() + " page #: " + wordPosition.pageNumber());
-                            }
+                    System.out.println("file = " + file.toString());
 
+                    SearchResult searchResult;
+                    try {
+                        searchResult = searchInPdf(file.toString(), keywords);
+                    } catch (Exception exception) {
+                        //TODO display error for a file and continue to search in other files
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    //TODO display result:
+                    System.out.format("found %d entries \n", searchResult.searchResultsPerWord().size());
+                    for (Map.Entry<String, List<WordPosition>> wordSearchResult : searchResult.searchResultsPerWord().entrySet()) {
+                        System.out.println("found word: " + wordSearchResult.getKey());
+                        for (WordPosition wordPosition : wordSearchResult.getValue()) {
+                            System.out.println("  at " + wordPosition.getAbsolutePosition() + " page #: " + wordPosition.pageNumber());
                         }
 
                     }
+
                     return FileVisitResult.CONTINUE;
                 }
 
