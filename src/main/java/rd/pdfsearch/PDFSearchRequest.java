@@ -10,14 +10,23 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
 
-public class PDFUtil {
+public class PDFSearchRequest {
+    private final BlockingQueue<String> outputQueue;
+    private final BlockingQueue<Throwable> errorQueue;
+
+    public PDFSearchRequest(BlockingQueue<String> outputQueue, BlockingQueue<Throwable> errorQueue) {
+        this.outputQueue = outputQueue;
+        this.errorQueue = errorQueue;
+    }
+
     /**
      * @param path path where to search for files
      * @param fileExtension filter: only search in files with this extension (e.g  ".pdf"). Leave empty string to ignore this parameter
      * @param keywords list of keywords to search for
      */
-    public static void searchInMultipleFiles(String path, String fileExtension, Collection<String> keywords) {
+    public void searchInMultipleFiles(String path, String fileExtension, Collection<String> keywords) {
         try {
             Files.walkFileTree(Paths.get(path), new FileVisitor<>() {
                 @Override
@@ -27,30 +36,33 @@ public class PDFUtil {
 
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    if (!Files.isRegularFile(file) || !file.toString().endsWith(fileExtension))
-                        return FileVisitResult.CONTINUE;
-
-                    System.out.println("file = " + file.toString());
-
-                    SearchResult searchResult;
                     try {
-                        searchResult = searchInPdf(file.toString(), keywords);
-                    } catch (Exception exception) {
-                        //TODO display error for a file and continue to search in other files
-                        return FileVisitResult.CONTINUE;
-                    }
+                        if (!Files.isRegularFile(file) || !file.toString().endsWith(fileExtension))
+                            return FileVisitResult.CONTINUE;
 
-                    //TODO display result:
-                    System.out.format("found %d entries \n", searchResult.searchResultsPerWord().size());
-                    for (Map.Entry<String, List<WordPosition>> wordSearchResult : searchResult.searchResultsPerWord().entrySet()) {
-                        System.out.println("found word: " + wordSearchResult.getKey());
-                        for (WordPosition wordPosition : wordSearchResult.getValue()) {
-                            System.out.println("  at " + wordPosition.getAbsolutePosition() + " page #: " + wordPosition.pageNumber());
+                        outputQueue.put("file = " + file.toString());
+
+                        SearchResult searchResult;
+                        try {
+                            searchResult = searchInPdf(file.toString(), keywords);
+                        } catch (Exception exception) {
+                            errorQueue.put(exception);
+                            return FileVisitResult.CONTINUE;
                         }
 
-                    }
+                        outputQueue.put(String.format("found %d entries \n", searchResult.searchResultsPerWord().size()));
 
-                    return FileVisitResult.CONTINUE;
+                        for (Map.Entry<String, List<WordPosition>> wordSearchResult : searchResult.searchResultsPerWord().entrySet()) {
+                            outputQueue.put("found word: " + wordSearchResult.getKey());
+                            for (WordPosition wordPosition : wordSearchResult.getValue()) {
+                                outputQueue.put("  at " + wordPosition.getAbsolutePosition() + " page #: " + wordPosition.pageNumber());
+                            }
+                        }
+
+                        return FileVisitResult.CONTINUE;
+                    } catch (Throwable throwable) {
+                        throw new RuntimeException(throwable);
+                    }
                 }
 
                 @Override
@@ -64,12 +76,12 @@ public class PDFUtil {
                     return FileVisitResult.CONTINUE;
                 }
             });
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static SearchResult searchInPdf(String filename, Collection<String> keywords) {
+    public SearchResult searchInPdf(String filename, Collection<String> keywords) {
         Map<String,List<WordPosition>> wordPositionsPerWord = new HashMap<>();
         File src = new File(filename);
         try (PdfReader pdfReader = new PdfReader(src.getAbsolutePath())) {

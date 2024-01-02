@@ -1,11 +1,10 @@
 package rd.pdfsearch.listeners;
 
 import rd.pdfsearch.MainWindow;
-import rd.pdfsearch.model.Preferences;
-import rd.util.JsonUtil;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.Optional;
 
 public class MainWindowListener implements WindowListener {
     final MainWindow mainWindow;
@@ -22,6 +21,8 @@ public class MainWindowListener implements WindowListener {
     @Override
     public void windowClosing(WindowEvent e) {
         this.mainWindow.savePreferences();
+        this.mainWindow.executorService.shutdownNow();
+        Optional.ofNullable(this.mainWindow.fileSearchFuture).ifPresent((future) -> future.cancel(true));
         this.mainWindow.dispose();
     }
 

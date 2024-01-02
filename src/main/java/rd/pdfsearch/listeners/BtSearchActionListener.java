@@ -1,12 +1,15 @@
 package rd.pdfsearch.listeners;
 
 import rd.pdfsearch.MainWindow;
-import rd.pdfsearch.PDFUtil;
-import rd.pdfsearch.PanelNorth;
+import rd.pdfsearch.PDFSearchRequest;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class BtSearchActionListener implements ActionListener {
     private final MainWindow mainWindow;
@@ -30,6 +33,37 @@ public class BtSearchActionListener implements ActionListener {
             keywordsArray[i] = keywordsArray[i].trim().toLowerCase();
         }
 
-        PDFUtil.searchInMultipleFiles(filename, ".pdf", List.of(keywordsArray));
+        BlockingQueue<String> outputQueue = new LinkedBlockingQueue<>(10);
+        BlockingQueue<Throwable> errorQueue = new LinkedBlockingQueue<>(10);
+
+        mainWindow.fileSearchFuture = mainWindow.executorService.submit(() -> {
+            new PDFSearchRequest(outputQueue, errorQueue).searchInMultipleFiles(filename, ".pdf", List.of(keywordsArray));
+        });
+
+        mainWindow.executorService.submit(() -> {
+            while (!mainWindow.fileSearchFuture.isDone()) {
+                try {
+                    String outputLine = outputQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (!Objects.isNull(outputLine)) {
+                        mainWindow.panelSouth.outputPrintln(outputLine);
+                    }
+                } catch (Exception exception) {
+                    mainWindow.panelSouth.outputError(exception);
+                }
+            }
+        });
+
+        mainWindow.executorService.submit(() -> {
+            while (!mainWindow.fileSearchFuture.isDone()) {
+                try {
+                    Throwable error = errorQueue.poll(100, TimeUnit.MILLISECONDS);;
+                    if (!Objects.isNull(error)) {
+                        mainWindow.panelSouth.outputError(error);
+                    }
+                } catch (Exception exception) {
+                    mainWindow.panelSouth.outputError(exception);
+                }
+            }
+        });
     }
 }

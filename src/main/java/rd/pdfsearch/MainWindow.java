@@ -14,6 +14,9 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class MainWindow extends JFrame {
     public final PanelNorth panelNorth;
@@ -23,6 +26,8 @@ public class MainWindow extends JFrame {
     public final int initHeight;
     public final String preferencesFile = "preferences.pdfsearch";
     public Preferences preferences;
+    public final ExecutorService executorService = Executors.newFixedThreadPool(3);
+    public Future<?> fileSearchFuture;
 
     public MainWindow(String title, int initWidth, int initHeight) {
         super(title);
@@ -86,4 +91,5 @@ public class MainWindow extends JFrame {
 
         JsonUtil.of(Preferences.class).marshallToFile(preferencesFile, preferences);
     }
+
 }

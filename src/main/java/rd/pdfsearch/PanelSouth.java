@@ -27,5 +27,11 @@ public class PanelSouth extends JPanel {
         outputList.setListData(outputListData);
     }
 
+    public void outputError(Throwable t) {
+        String line = "Error: " + t.toString() + " " + t.getMessage();
+        outputListData.add(line);
+        outputList.setListData(outputListData);
+    }
+
 
 }
