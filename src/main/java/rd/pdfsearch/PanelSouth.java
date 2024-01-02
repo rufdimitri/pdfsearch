@@ -4,8 +4,8 @@ import javax.swing.*;
 import java.util.Vector;
 
 public class PanelSouth extends JPanel {
-    JList<String> outputList;
-    Vector<String> outputListData = new Vector<String>();
+    public final JList<String> outputList;
+    public final Vector<String> outputListData = new Vector<String>();
 
     public PanelSouth(MainWindow mainWindow) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
