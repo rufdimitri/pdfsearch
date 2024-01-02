@@ -33,5 +33,10 @@ public class PanelSouth extends JPanel {
         outputList.setListData(outputListData);
     }
 
+    public void clearOutput() {
+        outputListData.clear();
+        outputList.setListData(outputListData);
+    }
+
 
 }

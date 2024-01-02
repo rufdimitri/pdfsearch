@@ -20,6 +20,8 @@ public class BtSearchActionListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        mainWindow.panelNorth.btSearch.setEnabled(false);
+        mainWindow.panelSouth.clearOutput();
         mainWindow.savePreferences();
         String filename = mainWindow.panelNorth.tfSearchLocation.getText().replaceAll("\"", "");
 
@@ -38,6 +40,7 @@ public class BtSearchActionListener implements ActionListener {
 
         mainWindow.fileSearchFuture = mainWindow.executorService.submit(() -> {
             new PDFSearchRequest(outputQueue, errorQueue).searchInMultipleFiles(filename, ".pdf", List.of(keywordsArray));
+            mainWindow.panelNorth.btSearch.setEnabled(true);
         });
 
         mainWindow.executorService.submit(() -> {
