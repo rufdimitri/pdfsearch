@@ -35,38 +35,9 @@ public class BtSearchActionListener implements ActionListener {
             keywordsArray[i] = keywordsArray[i].trim().toLowerCase();
         }
 
-        BlockingQueue<String> outputQueue = new LinkedBlockingQueue<>(10);
-        BlockingQueue<Throwable> errorQueue = new LinkedBlockingQueue<>(10);
-
         mainWindow.fileSearchFuture = mainWindow.executorService.submit(() -> {
-            new PDFSearchRequest(outputQueue, errorQueue).searchInMultipleFiles(filename, ".pdf", List.of(keywordsArray));
+            new PDFSearchRequest(mainWindow.outputQueue, mainWindow.errorQueue).searchInMultipleFiles(filename, ".pdf", List.of(keywordsArray));
             mainWindow.panelNorth.btSearch.setEnabled(true);
-        });
-
-        mainWindow.executorService.submit(() -> {
-            while (!mainWindow.fileSearchFuture.isDone() || !outputQueue.isEmpty()) {
-                try {
-                    String outputLine = outputQueue.poll(100, TimeUnit.MILLISECONDS);
-                    if (!Objects.isNull(outputLine)) {
-                        mainWindow.panelSouth.outputPrintln(outputLine);
-                    }
-                } catch (Exception exception) {
-                    mainWindow.panelSouth.outputError(exception);
-                }
-            }
-        });
-
-        mainWindow.executorService.submit(() -> {
-            while (!mainWindow.fileSearchFuture.isDone() || !errorQueue.isEmpty()) {
-                try {
-                    Throwable error = errorQueue.poll(100, TimeUnit.MILLISECONDS);;
-                    if (!Objects.isNull(error)) {
-                        mainWindow.panelSouth.outputError(error);
-                    }
-                } catch (Exception exception) {
-                    mainWindow.panelSouth.outputError(exception);
-                }
-            }
         });
     }
 }

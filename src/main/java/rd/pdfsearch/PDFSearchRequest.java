@@ -66,6 +66,8 @@ public class PDFSearchRequest {
                             searchResult = new SearchResult(file.toString(), searchInContents(pagesContent, keywords));
                         } catch (Exception exception) {
                             errorQueue.put(exception);
+                            exception.printStackTrace();
+                            System.out.println("errorQueue: " + errorQueue.size());
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -86,7 +88,11 @@ public class PDFSearchRequest {
 
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                    System.err.println(exc.toString() + " / At file: " + file);
+                    try {
+                        errorQueue.put(exc);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                     return FileVisitResult.CONTINUE;
                 }
 

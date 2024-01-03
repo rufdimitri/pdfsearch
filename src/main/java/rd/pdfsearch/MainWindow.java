@@ -14,9 +14,8 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.Objects;
+import java.util.concurrent.*;
 
 public class MainWindow extends JFrame {
     public final PanelNorth panelNorth;
@@ -26,8 +25,10 @@ public class MainWindow extends JFrame {
     public final int initHeight;
     public final String preferencesFile = "preferences.pdfsearch";
     public Preferences preferences;
-    public final ExecutorService executorService = Executors.newFixedThreadPool(3);
+    public final ExecutorService executorService = Executors.newFixedThreadPool(1);
     public Future<?> fileSearchFuture;
+    public final BlockingQueue<String> outputQueue = new LinkedBlockingQueue<>(10);
+    public final BlockingQueue<Throwable> errorQueue = new LinkedBlockingQueue<>(10);
 
     public MainWindow(String title, int initWidth, int initHeight) {
         super(title);
@@ -70,8 +71,9 @@ public class MainWindow extends JFrame {
         fontAttributes.put(TextAttribute.FAMILY, "Tahoma");
         fontAttributes.put(TextAttribute.SIZE, 14);
         Font font1 = Font.getFont(fontAttributes);
-
         SwingUtil.changeFont(this, font1);
+
+        startDaemons();
 
         setVisible(true);
     }
@@ -90,6 +92,38 @@ public class MainWindow extends JFrame {
         preferences.setKeywordsSeparator(panelNorth.tfKeywordSeparator.getText());
 
         JsonUtil.of(Preferences.class).marshallToFile(preferencesFile, preferences);
+    }
+
+    private void startDaemons() {
+        Thread outputReader = new Thread(() -> {
+            while (true) {
+                try {
+                    String outputLine = outputQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (!Objects.isNull(outputLine)) {
+                        panelSouth.outputPrintln(outputLine);
+                    }
+                } catch (Exception exception) {
+                    panelSouth.outputError(exception);
+                }
+            }
+        });
+        outputReader.setDaemon(true);
+        outputReader.start();
+
+        Thread errorReader = new Thread(() -> {
+            while (true) {
+                try {
+                    Throwable error = errorQueue.poll(100, TimeUnit.MILLISECONDS);;
+                    if (!Objects.isNull(error)) {
+                        panelSouth.outputError(error);
+                    }
+                } catch (Exception exception) {
+                    panelSouth.outputError(exception);
+                }
+            }
+        });
+        errorReader.setDaemon(true);
+        errorReader.start();
     }
 
 }
