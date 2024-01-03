@@ -12,4 +12,10 @@ public class SwingUtil {
             }
         }
     }
+
+    public static int getFontHeight(Graphics g, Font font) {
+        FontMetrics m= g.getFontMetrics(font); // g is your current Graphics object
+        float totalSize= (float) (font.getSize() * (m.getAscent() + m.getDescent())) / m.getAscent();
+        return Math.round(totalSize);
+    }
 }

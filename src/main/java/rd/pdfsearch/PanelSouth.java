@@ -1,10 +1,14 @@
 package rd.pdfsearch;
 
+import rd.util.SwingUtil;
+
 import javax.swing.*;
+import java.awt.*;
 
 public class PanelSouth extends JPanel {
     public final JList<String> outputList;
     public final DefaultListModel<String> outputListModel = new DefaultListModel<>();
+    private boolean fixedCellHeightSet = false;
 
     public PanelSouth(MainWindow mainWindow) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -12,13 +16,10 @@ public class PanelSouth extends JPanel {
 
         outputList = new JList<>(outputListModel); //data has type Object[]
         outputList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+
         outputList.setLayoutOrientation(JList.VERTICAL);
-        outputList.setVisibleRowCount(15);
         System.out.println(outputListModel.capacity());
 
-        //add empty element and select it. somehow helps it to fix error where list is not empty but is displayed as empty
-        outputListModel.addElement(" ");
-        outputList.setSelectedIndex(0);
 
         JScrollPane scrollPane = new JScrollPane(outputList);
         add(scrollPane);
@@ -35,6 +36,7 @@ public class PanelSouth extends JPanel {
         synchronized (outputListModel) {
             outputListModel.addElement(line);
         }
+        t.printStackTrace(System.err);
     }
 
     public void clearOutput() {
@@ -43,5 +45,12 @@ public class PanelSouth extends JPanel {
         }
     }
 
-
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        if (!fixedCellHeightSet) {
+            outputList.setFixedCellHeight(SwingUtil.getFontHeight(outputList.getGraphics(), outputList.getFont()) + 5);
+            fixedCellHeightSet = true;
+        }
+    }
 }
