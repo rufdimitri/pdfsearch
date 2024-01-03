@@ -112,7 +112,7 @@ public class PDFSearchRequest {
     private CachedPdfFile getCachedPdfFile(Path file) {
         FileIdentity fileIdentity = getFileIdentity(file);
 
-        List<CachedPdfFile> cachedPdfFiles = cachedFilePerHashCode.get(fileIdentity.hashCode());
+        List<CachedPdfFile> cachedPdfFiles = cachedFilePerHashCode.getOrDefault(fileIdentity.hashCode(), Collections.emptyList());
         for (CachedPdfFile cachedFile : cachedPdfFiles) {
             if (cachedFile.fileIdentity().equals(fileIdentity))
                 return cachedFile;
