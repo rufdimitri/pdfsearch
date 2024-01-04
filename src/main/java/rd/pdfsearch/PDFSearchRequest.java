@@ -17,18 +17,18 @@ import java.util.concurrent.BlockingQueue;
 public class PDFSearchRequest {
     private final BlockingQueue<String> outputQueue;
     private final BlockingQueue<Throwable> errorQueue;
-    private final Map<Integer,List<CachedPdfFile>> cachedFilePerHashCode;
+    private final Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode;
 
-    public PDFSearchRequest(BlockingQueue<String> outputQueue, BlockingQueue<Throwable> errorQueue, Map<Integer,List<CachedPdfFile>> cachedFilePerHashCode) {
+    public PDFSearchRequest(BlockingQueue<String> outputQueue, BlockingQueue<Throwable> errorQueue, Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode) {
         this.outputQueue = outputQueue;
         this.errorQueue = errorQueue;
-        this.cachedFilePerHashCode = cachedFilePerHashCode;
+        this.cachedFilesPerFileIdentityHashCode = cachedFilesPerFileIdentityHashCode;
     }
 
     public PDFSearchRequest(BlockingQueue<String> outputQueue, BlockingQueue<Throwable> errorQueue) {
         this.outputQueue = outputQueue;
         this.errorQueue = errorQueue;
-        this.cachedFilePerHashCode = new HashMap<>();
+        this.cachedFilesPerFileIdentityHashCode = new HashMap<>();
     }
 
     /**
@@ -112,7 +112,7 @@ public class PDFSearchRequest {
     private CachedPdfFile getCachedPdfFile(Path file) {
         FileIdentity fileIdentity = getFileIdentity(file);
 
-        List<CachedPdfFile> cachedPdfFiles = cachedFilePerHashCode.getOrDefault(fileIdentity.hashCode(), Collections.emptyList());
+        List<CachedPdfFile> cachedPdfFiles = cachedFilesPerFileIdentityHashCode.getOrDefault(fileIdentity.hashCode(), Collections.emptyList());
         for (CachedPdfFile cachedFile : cachedPdfFiles) {
             if (cachedFile.fileIdentity().equals(fileIdentity))
                 return cachedFile;
@@ -127,9 +127,9 @@ public class PDFSearchRequest {
      */
     private void cachePdfFile(List<String> pagesContent, Path file) {
         CachedPdfFile cachedPdfFile = new CachedPdfFile(pagesContent, getFileIdentity(file), System.currentTimeMillis());
-        List<CachedPdfFile> cachedFilesList = cachedFilePerHashCode.getOrDefault(cachedPdfFile.hashCode(), new ArrayList<>());
+        List<CachedPdfFile> cachedFilesList = cachedFilesPerFileIdentityHashCode.getOrDefault(cachedPdfFile.hashCode(), new ArrayList<>());
         cachedFilesList.add(cachedPdfFile);
-        cachedFilePerHashCode.put(cachedPdfFile.hashCode(), cachedFilesList);
+        cachedFilesPerFileIdentityHashCode.put(cachedPdfFile.fileIdentity().hashCode(), cachedFilesList);
     }
 
     private FileIdentity getFileIdentity(Path file) {

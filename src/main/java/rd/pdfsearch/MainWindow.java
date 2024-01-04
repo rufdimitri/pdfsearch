@@ -1,6 +1,7 @@
 package rd.pdfsearch;
 
 import rd.pdfsearch.listeners.MainWindowListener;
+import rd.pdfsearch.model.CachedPdfFile;
 import rd.pdfsearch.model.Preferences;
 import rd.util.JsonUtil;
 import rd.util.SwingUtil;
@@ -13,22 +14,27 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.*;
 
 public class MainWindow extends JFrame {
+    public final String PREFERENCES_FILE = "preferences.pdfsearch";
+    public final String CACHED_PDF_FILENAME = "cachedPdf.pdfsearch";
     public final PanelNorth panelNorth;
     public final PanelCenter panelCenter;
     public final PanelSouth panelSouth;
     public final int initWidth;
     public final int initHeight;
-    public final String preferencesFile = "preferences.pdfsearch";
+
     public Preferences preferences;
     public final ExecutorService executorService = Executors.newFixedThreadPool(1);
     public Future<?> fileSearchFuture;
     public final BlockingQueue<String> outputQueue = new LinkedBlockingQueue<>(10);
     public final BlockingQueue<Throwable> errorQueue = new LinkedBlockingQueue<>(10);
+    public Map<Integer, List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode;
+
 
     public MainWindow(String title, int initWidth, int initHeight) {
         super(title);
@@ -49,7 +55,7 @@ public class MainWindow extends JFrame {
 
         //Load preferences
         try {
-            preferences = JsonUtil.of(Preferences.class).unmarshallFromFile(preferencesFile);
+            preferences = JsonUtil.of(Preferences.class).unmarshallFromFile(PREFERENCES_FILE);
         } catch (Exception exception) {
             if (exception.getCause().getClass() != FileNotFoundException.class) throw exception;
 
@@ -91,7 +97,7 @@ public class MainWindow extends JFrame {
         preferences.setKeywords(panelNorth.tfKeywords.getText());
         preferences.setKeywordsSeparator(panelNorth.tfKeywordSeparator.getText());
 
-        JsonUtil.of(Preferences.class).marshallToFile(preferencesFile, preferences);
+        JsonUtil.of(Preferences.class).marshallToFile(PREFERENCES_FILE, preferences);
     }
 
     private void startDaemons() {

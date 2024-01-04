@@ -32,6 +32,14 @@ public class JsonUtil <T> {
         }
     }
 
+    public T unmarshallFromFileOrDefault(String fileName, T defaultValue) {
+        try {
+            return unmarshallFromFile(fileName);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
     public void marshallToFile(String fileName, T object) {
         try (Writer writer = new FileWriter(fileName, StandardCharsets.UTF_8)) {
             GsonBuilder builder = new GsonBuilder();
