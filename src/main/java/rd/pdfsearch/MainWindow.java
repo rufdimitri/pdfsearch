@@ -1,5 +1,6 @@
 package rd.pdfsearch;
 
+import com.google.gson.reflect.TypeToken;
 import rd.pdfsearch.listeners.MainWindowListener;
 import rd.pdfsearch.model.CachedPdfFile;
 import rd.pdfsearch.model.Preferences;
@@ -55,7 +56,7 @@ public class MainWindow extends JFrame {
 
         //Load preferences
         try {
-            preferences = JsonUtil.of(Preferences.class).unmarshallFromFile(PREFERENCES_FILE);
+            preferences = JsonUtil.unmarshallFromFile(PREFERENCES_FILE, new TypeToken<>(){});
         } catch (Exception exception) {
             if (exception.getCause().getClass() != FileNotFoundException.class) throw exception;
 
@@ -97,7 +98,7 @@ public class MainWindow extends JFrame {
         preferences.setKeywords(panelNorth.tfKeywords.getText());
         preferences.setKeywordsSeparator(panelNorth.tfKeywordSeparator.getText());
 
-        JsonUtil.of(Preferences.class).marshallToFile(PREFERENCES_FILE, preferences);
+        JsonUtil.marshallToFile(PREFERENCES_FILE, preferences);
     }
 
     private void startDaemons() {

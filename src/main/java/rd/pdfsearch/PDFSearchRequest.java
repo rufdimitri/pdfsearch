@@ -50,16 +50,16 @@ public class PDFSearchRequest {
                         if (!Files.isRegularFile(file) || !file.toString().endsWith(fileExtension))
                             return FileVisitResult.CONTINUE;
 
-                        outputQueue.put("file = " + file.toString());
-
                         SearchResult searchResult;
                         try {
                             List<String> pagesContent;
                             CachedPdfFile cachedPdfFile = getCachedPdfFile(file);
                             if (cachedPdfFile == null) {
+                                outputQueue.put("file = " + file.toString());
                                 pagesContent = getPdfPagesContent(file);
                                 cachePdfFile(pagesContent, file);
                             } else {
+                                outputQueue.put("file = " + file.toString() + " (cached version)");
                                 pagesContent = cachedPdfFile.pagesContent();
                             }
 

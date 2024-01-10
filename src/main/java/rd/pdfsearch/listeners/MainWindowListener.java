@@ -1,6 +1,7 @@
 package rd.pdfsearch.listeners;
 
 import rd.pdfsearch.MainWindow;
+import rd.util.JsonUtil;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -23,6 +24,7 @@ public class MainWindowListener implements WindowListener {
         this.mainWindow.savePreferences();
         this.mainWindow.executorService.shutdownNow();
         Optional.ofNullable(this.mainWindow.fileSearchFuture).ifPresent((future) -> future.cancel(true));
+        JsonUtil.marshallToFile(mainWindow.CACHED_PDF_FILENAME, mainWindow.cachedFilesPerFileIdentityHashCode);
         this.mainWindow.dispose();
     }
 

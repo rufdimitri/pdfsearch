@@ -46,7 +46,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>rd.pdfsearch.App</mainClass>
+              <mainClass>rd.pdfsearch.AppPdfSearch</mainClass>
             </manifest>
           </archive>
         </configuration>
