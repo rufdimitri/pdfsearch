@@ -2,10 +2,7 @@ package rd.pdfsearch;
 
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.parser.PdfTextExtractor;
-import rd.pdfsearch.model.CachedPdfFile;
-import rd.pdfsearch.model.FileIdentity;
-import rd.pdfsearch.model.SearchResult;
-import rd.pdfsearch.model.WordPosition;
+import rd.pdfsearch.model.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,9 +31,9 @@ public class PDFSearchRequest {
     /**
      * @param path path where to search for files
      * @param fileExtension filter: only search in files with this extension (e.g  ".pdf"). Leave empty string to ignore this parameter
-     * @param keywords list of keywords to search for
+     * @param searchCriteria
      */
-    public void searchInMultipleFiles(String path, String fileExtension, List<String> keywords) {
+    public void searchInMultipleFiles(String path, String fileExtension, SearchCriteria searchCriteria) {
         try {
             Files.walkFileTree(Paths.get(path), new FileVisitor<>() {
                 @Override
@@ -63,7 +60,7 @@ public class PDFSearchRequest {
                                 pagesContent = cachedPdfFile.pagesContent();
                             }
 
-                            searchResult = new SearchResult(file.toString(), searchInContents(pagesContent, keywords));
+                            searchResult = new SearchResult(file.toString(), searchInContents(pagesContent, searchCriteria));
                         } catch (Exception exception) {
                             errorQueue.put(exception);
                             exception.printStackTrace();
@@ -144,10 +141,10 @@ public class PDFSearchRequest {
     /**
      * Searches for keywords in contents, case-insensitive
      * @param contents List of pages
-     * @param keywords List of keywords
+     * @param searchCriteria
      * @return Map of Positions per Word
      */
-    public Map<String,List<WordPosition>> searchInContents(List<String> contents, List<String> keywords) {
+    public Map<String,List<WordPosition>> searchInContents(List<String> contents, SearchCriteria searchCriteria) {
         Map<String,List<WordPosition>> positionsPerWord = new HashMap<>();
 
         int pagePosition = 0;
@@ -155,7 +152,7 @@ public class PDFSearchRequest {
         for (String pageText : contents) {
             String pageTextLow = pageText.toLowerCase();
 
-            for (String keyword : keywords) {
+            for (String keyword : searchCriteria.getKeywords()) {
                 String keywordLow = keyword.toLowerCase();
                 int position = pageTextLow.indexOf(keywordLow);
                 if (position >= 0) {
@@ -167,6 +164,38 @@ public class PDFSearchRequest {
 
             pagePosition += pageText.length();
             pageNr++;
+        }
+
+        //did not find all words in this Document
+        if (positionsPerWord.size() < searchCriteria.getKeywords().size()) return Collections.emptyMap();
+        if (searchCriteria.getWordScopeType() == SearchCriteria.WordScopeType.RANGE) {
+            int rangeSize = searchCriteria.getRangeSize();
+            for (Map.Entry<String, List<WordPosition>> entry1 : positionsPerWord.entrySet()) {
+                String word1 = entry1.getKey();
+                for (WordPosition wordPosition1 : entry1.getValue()) {
+                    for (Map.Entry<String, List<WordPosition>> entry2 : positionsPerWord.entrySet()) {
+                        String word2 = entry2.getKey();
+                        for (WordPosition wordPosition2 : entry2.getValue()) {
+                            if (!word1.equals(word2) || true) {  //TODO fix debug condition
+                                System.out.format("word1: %s pos: %d / word2: %s pos2: %d / diff: %d\n",
+                                        word1, wordPosition1.getAbsolutePosition(), word2, wordPosition2.getAbsolutePosition(),
+                                        Math.abs(wordPosition1.getAbsolutePosition() - wordPosition2.getAbsolutePosition()));
+                            }
+                        }
+                    }
+                }
+
+
+            }
+            //TODO test and compare with for-each
+            System.out.println("---------\nstream implementation");
+            positionsPerWord.values().stream().flatMap(Collection::stream).forEach(wordPosition1 -> {
+                positionsPerWord.values().stream().flatMap(Collection::stream).forEach(wordPosition2 -> {
+                    System.out.format("pos: %d / pos2: %d / diff: %d\n",
+                            wordPosition1.getAbsolutePosition(), wordPosition2.getAbsolutePosition(),
+                            Math.abs(wordPosition1.getAbsolutePosition() - wordPosition2.getAbsolutePosition()));
+                });
+            });
         }
 
         return positionsPerWord;
