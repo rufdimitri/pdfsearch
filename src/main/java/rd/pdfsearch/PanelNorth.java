@@ -50,6 +50,20 @@ public class PanelNorth extends JPanel {
         tfKeywordSeparator = new JTextField(mainWindow.preferences.getKeywordsSeparator());
         add(tfKeywordSeparator, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
 
+        add(new JLabel("Scope: "), constraintsBuilder.newRow().fillNone().width(1).build());
+
+        JPanel pnScope = new JPanel(new FlowLayout());
+        add(pnScope, constraintsBuilder.newCol().fillNone().width(1).build());
+        ButtonGroup grScope = new ButtonGroup();
+        //add radiobutton Document
+        JRadioButton rbDocument = new JRadioButton("Document", true);
+        pnScope.add(rbDocument);
+        grScope.add(rbDocument);
+        //add radiobutton Range
+        JRadioButton rbRange = new JRadioButton("Range");
+        pnScope.add(rbRange);
+        grScope.add(rbRange);
+
         btSearch = new JButton("Search");
         btSearch.addActionListener(new BtSearchActionListener(mainWindow));
         add(btSearch, constraintsBuilder.newRow().fillNone().width(1).build());

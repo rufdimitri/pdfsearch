@@ -5,6 +5,7 @@ import rd.pdfsearch.MainWindow;
 import rd.pdfsearch.PDFSearchRequest;
 import rd.util.JsonUtil;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -19,28 +20,30 @@ public class BtSearchActionListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        mainWindow.panelNorth.btSearch.setEnabled(false);
-        mainWindow.panelSouth.clearOutput();
-        mainWindow.savePreferences();
-        if (mainWindow.cachedFilesPerFileIdentityHashCode == null || mainWindow.cachedFilesPerFileIdentityHashCode.isEmpty()) {
-            mainWindow.cachedFilesPerFileIdentityHashCode = JsonUtil.unmarshallFromFileOrDefault(mainWindow.CACHED_PDF_FILENAME, new TypeToken<>(){}, new HashMap<>());
-        }
-        String filename = mainWindow.panelNorth.tfSearchLocation.getText().replaceAll("\"", "");
+        SwingUtilities.invokeLater(() -> {
+            mainWindow.panelNorth.btSearch.setEnabled(false);
+            mainWindow.panelSouth.clearOutput();
+            mainWindow.savePreferences();
+            if (mainWindow.cachedFilesPerFileIdentityHashCode == null || mainWindow.cachedFilesPerFileIdentityHashCode.isEmpty()) {
+                mainWindow.cachedFilesPerFileIdentityHashCode = JsonUtil.unmarshallFromFileOrDefault(mainWindow.CACHED_PDF_FILENAME, new TypeToken<>(){}, new HashMap<>());
+            }
+            String filename = mainWindow.panelNorth.tfSearchLocation.getText().replaceAll("\"", "");
 
-        //add regex quotation (\Q \E) to escape regex special characters that could appear in tfKeywordSeparator
-        String splitter = "\\Q" + mainWindow.panelNorth.tfKeywordSeparator.getText() + "\\E";
+            //add regex quotation (\Q \E) to escape regex special characters that could appear in tfKeywordSeparator
+            String splitter = "\\Q" + mainWindow.panelNorth.tfKeywordSeparator.getText() + "\\E";
 
-        String[] keywordsArray = mainWindow.panelNorth.tfKeywords.getText()
-                .split(splitter);
+            String[] keywordsArray = mainWindow.panelNorth.tfKeywords.getText()
+                    .split(splitter);
 
-        for (int i = 0; i < keywordsArray.length; ++i) {
-            keywordsArray[i] = keywordsArray[i].trim().toLowerCase();
-        }
+            for (int i = 0; i < keywordsArray.length; ++i) {
+                keywordsArray[i] = keywordsArray[i].trim().toLowerCase();
+            }
 
-        mainWindow.fileSearchFuture = mainWindow.executorService.submit(() -> {
-            new PDFSearchRequest(mainWindow.outputQueue, mainWindow.errorQueue, mainWindow.cachedFilesPerFileIdentityHashCode).searchInMultipleFiles(filename, ".pdf", List.of(keywordsArray));
-            mainWindow.panelNorth.btSearch.setEnabled(true);
-            JsonUtil.marshallToFile(mainWindow.CACHED_PDF_FILENAME, mainWindow.cachedFilesPerFileIdentityHashCode);
+            mainWindow.fileSearchFuture = mainWindow.executorService.submit(() -> {
+                new PDFSearchRequest(mainWindow.outputQueue, mainWindow.errorQueue, mainWindow.cachedFilesPerFileIdentityHashCode).searchInMultipleFiles(filename, ".pdf", List.of(keywordsArray));
+                mainWindow.panelNorth.btSearch.setEnabled(true);
+                JsonUtil.marshallToFile(mainWindow.CACHED_PDF_FILENAME, mainWindow.cachedFilesPerFileIdentityHashCode);
+            });
         });
     }
 }

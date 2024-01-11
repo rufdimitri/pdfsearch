@@ -46,7 +46,10 @@ public class JsonUtil {
      */
     public static <T> T unmarshallFromFileOrDefault(String fileName, TypeToken<T> typeToken, T defaultValue) {
         try {
-            return unmarshallFromFile(fileName, typeToken);
+            T object = unmarshallFromFile(fileName, typeToken);
+            //TODO uncomment following line (commented for debug purpose for TODO with exception hanging at SearchRequest constructor)
+            //if (object == null) return defaultValue;
+            return object;
         } catch (Exception e) {
             return defaultValue;
         }

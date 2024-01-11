@@ -17,17 +17,19 @@ import java.util.concurrent.BlockingQueue;
 public class PDFSearchRequest {
     private final BlockingQueue<String> outputQueue;
     private final BlockingQueue<Throwable> errorQueue;
-    private final Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode;
+    private Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode;
 
     public PDFSearchRequest(BlockingQueue<String> outputQueue, BlockingQueue<Throwable> errorQueue, Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode) {
-        this.outputQueue = outputQueue;
-        this.errorQueue = errorQueue;
-        this.cachedFilesPerFileIdentityHashCode = cachedFilesPerFileIdentityHashCode;
+        this.outputQueue = Objects.requireNonNull(outputQueue);
+        this.errorQueue = Objects.requireNonNull(errorQueue);
+        this.cachedFilesPerFileIdentityHashCode = Objects.requireNonNull(cachedFilesPerFileIdentityHashCode);
+        //TODO fix exception not shown
+        throw new RuntimeException("TODO: i want to see this in output");
     }
 
     public PDFSearchRequest(BlockingQueue<String> outputQueue, BlockingQueue<Throwable> errorQueue) {
-        this.outputQueue = outputQueue;
-        this.errorQueue = errorQueue;
+        this.outputQueue = Objects.requireNonNull(outputQueue);
+        this.errorQueue = Objects.requireNonNull(errorQueue);
         this.cachedFilesPerFileIdentityHashCode = new HashMap<>();
     }
 

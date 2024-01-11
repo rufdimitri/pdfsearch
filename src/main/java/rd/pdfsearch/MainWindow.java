@@ -10,10 +10,7 @@ import rd.util.SwingUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.font.TextAttribute;
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +27,7 @@ public class MainWindow extends JFrame {
     public final int initHeight;
 
     public Preferences preferences;
-    public final ExecutorService executorService = Executors.newFixedThreadPool(1);
+    public final ExecutorService executorService = Executors.newFixedThreadPool(1, ThreadFactory.getThreadFactory(this));
     public Future<?> fileSearchFuture;
     public final BlockingQueue<String> outputQueue = new LinkedBlockingQueue<>(10);
     public final BlockingQueue<Throwable> errorQueue = new LinkedBlockingQueue<>(10);
@@ -39,13 +36,7 @@ public class MainWindow extends JFrame {
 
     public MainWindow(String title, int initWidth, int initHeight) {
         super(title);
-        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            exception.printStackTrace(new PrintStream(baos, true, StandardCharsets.UTF_8));
-            String output = baos.toString(StandardCharsets.UTF_8);
-            System.err.println(output);
-            JOptionPane.showMessageDialog(null, "Error: " + output, "PdfSearch", JOptionPane.ERROR_MESSAGE);
-        });
+        Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.getExceptionHandler(this));
         setSize(initWidth, initHeight);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -114,6 +105,7 @@ public class MainWindow extends JFrame {
                 }
             }
         });
+        outputReader.setUncaughtExceptionHandler(ExceptionHandler.getExceptionHandler(this));
         outputReader.setDaemon(true);
         outputReader.start();
 
@@ -129,6 +121,7 @@ public class MainWindow extends JFrame {
                 }
             }
         });
+        errorReader.setUncaughtExceptionHandler(ExceptionHandler.getExceptionHandler(this));
         errorReader.setDaemon(true);
         errorReader.start();
     }
