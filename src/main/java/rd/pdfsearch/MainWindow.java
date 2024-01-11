@@ -30,7 +30,7 @@ public class MainWindow extends JFrame {
     public Future<?> fileSearchFuture;
     public final BlockingQueue<String> outputQueue = new LinkedBlockingQueue<>(10);
     public final BlockingQueue<Throwable> errorQueue = new LinkedBlockingQueue<>(10);
-    public Map<Integer, List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode;
+    public Map<Integer, List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode = new HashMap<>();
 
 
     public MainWindow(String title, int initWidth, int initHeight) {

@@ -6,6 +6,7 @@ import rd.pdfsearch.listeners.BtSearchActionListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Iterator;
 
 public class PanelNorth extends JPanel {
     public final JTextField tfSearchLocation;
@@ -15,6 +16,8 @@ public class PanelNorth extends JPanel {
     public final JButton btSearch;
     public final MainWindow mainWindow;
     public final JFileChooser fileChooser = new JFileChooser();
+    public final JTextField tfRange;
+    public final JRadioButton rbRange;
 
     public PanelNorth(MainWindow mainWindow) {
         setLayout(new GridBagLayout());
@@ -60,13 +63,28 @@ public class PanelNorth extends JPanel {
         pnScope.add(rbDocument);
         grScope.add(rbDocument);
         //add radiobutton Range
-        JRadioButton rbRange = new JRadioButton("Range");
-        pnScope.add(rbRange);
-        grScope.add(rbRange);
+        this.rbRange = new JRadioButton("Range");
+        pnScope.add(this.rbRange);
+        grScope.add(this.rbRange);
+        //add text field "Range"
+        this.tfRange = new JTextField("");
+        this.tfRange.setColumns(5);
+        pnScope.add(this.tfRange);
+        //add EventListeners for radiobuttons
+        Iterator<AbstractButton> rbGroupIterator = grScope.getElements().asIterator();
+        while (rbGroupIterator.hasNext()) {
+            AbstractButton radioButton = rbGroupIterator.next();
+            radioButton.addActionListener(e -> this.tfRange.setVisible(this.rbRange.isSelected()));
+        }
 
         btSearch = new JButton("Search");
         btSearch.addActionListener(new BtSearchActionListener(mainWindow));
         add(btSearch, constraintsBuilder.newRow().fillNone().width(1).build());
     }
 
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        this.tfRange.setVisible(this.rbRange.isSelected());
+    }
 }
