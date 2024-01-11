@@ -23,7 +23,7 @@ public class PanelNorth extends JPanel {
     public PanelNorth(MainWindow mainWindow) {
         setLayout(new GridBagLayout());
         this.mainWindow = mainWindow;
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        this.fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
         GridBagContraintsBuilder constraintsBuilder = new GridBagContraintsBuilder();
         constraintsBuilder.x(0).y(0).insets(5);
@@ -32,11 +32,11 @@ public class PanelNorth extends JPanel {
         //init search location components
         add(new JLabel("Search location:"), constraintsBuilder.fillNone().width(1).build());
 
-        tfSearchLocation = new JTextField(mainWindow.preferences.getSearchLocation());
-        add(tfSearchLocation, constraintsBuilder.newCol().fillHorizontal(1).width(2).build());
+        this.tfSearchLocation = new JTextField(mainWindow.preferences.getSearchLocation());
+        add(this.tfSearchLocation, constraintsBuilder.newCol().fillHorizontal(1).width(2).build());
 
-        btSelectPath = new JButton("...");
-        btSelectPath.addActionListener((ActionEvent e) -> {
+        this.btSelectPath = new JButton("...");
+        this.btSelectPath.addActionListener((ActionEvent e) -> {
             if (PanelNorth.this.fileChooser.showOpenDialog(PanelNorth.this) == JFileChooser.APPROVE_OPTION) {
                 PanelNorth.this.tfSearchLocation.setText(
                         fileChooser.getSelectedFile().getAbsolutePath()
@@ -44,18 +44,18 @@ public class PanelNorth extends JPanel {
             }
         });
 
-        add(btSelectPath, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
+        add(this.btSelectPath, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
 
         //-------------------------------
         //init keywords row components
         add(new JLabel("Keywords: "), constraintsBuilder.newRow().fillNone().width(1).build());
 
-        tfKeywords = new JTextField(mainWindow.preferences.getKeywords());
-        add(tfKeywords, constraintsBuilder.newCol().fillHorizontal(1).width(1).build());
+        this.tfKeywords = new JTextField(mainWindow.preferences.getKeywords());
+        add(this.tfKeywords, constraintsBuilder.newCol().fillHorizontal(1).width(1).build());
 
         add(new JLabel("Keywords separator: "), constraintsBuilder.newCol().fillNone().width(1).build());
-        tfKeywordSeparator = new JTextField(mainWindow.preferences.getKeywordsSeparator());
-        add(tfKeywordSeparator, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
+        this.tfKeywordSeparator = new JTextField(mainWindow.preferences.getKeywordsSeparator());
+        add(this.tfKeywordSeparator, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
 
         //-------------------------------
         //init scope components
@@ -94,9 +94,9 @@ public class PanelNorth extends JPanel {
 
         //-------------------------------
         //init search button
-        btSearch = new JButton("Search");
-        btSearch.addActionListener(new BtSearchActionListener(mainWindow));
-        add(btSearch, constraintsBuilder.newCol().newCol().fillHorizontal(0.1).width(1).build());
+        this.btSearch = new JButton("Search");
+        this.btSearch.addActionListener(new BtSearchActionListener(mainWindow));
+        add(this.btSearch, constraintsBuilder.newCol().newCol().fillHorizontal(0.1).width(1).build());
     }
 
     @Override
