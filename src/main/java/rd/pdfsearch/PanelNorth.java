@@ -18,6 +18,7 @@ public class PanelNorth extends JPanel {
     public final JFileChooser fileChooser = new JFileChooser();
     public final JTextField tfRange;
     public final JRadioButton rbRange;
+    public final JPanel pnScope;
 
     public PanelNorth(MainWindow mainWindow) {
         setLayout(new GridBagLayout());
@@ -27,6 +28,8 @@ public class PanelNorth extends JPanel {
         GridBagContraintsBuilder constraintsBuilder = new GridBagContraintsBuilder();
         constraintsBuilder.x(0).y(0).insets(5);
 
+        //-------------------------------
+        //init search location components
         add(new JLabel("Search location:"), constraintsBuilder.fillNone().width(1).build());
 
         tfSearchLocation = new JTextField(mainWindow.preferences.getSearchLocation());
@@ -43,7 +46,8 @@ public class PanelNorth extends JPanel {
 
         add(btSelectPath, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
 
-
+        //-------------------------------
+        //init keywords row components
         add(new JLabel("Keywords: "), constraintsBuilder.newRow().fillNone().width(1).build());
 
         tfKeywords = new JTextField(mainWindow.preferences.getKeywords());
@@ -53,38 +57,54 @@ public class PanelNorth extends JPanel {
         tfKeywordSeparator = new JTextField(mainWindow.preferences.getKeywordsSeparator());
         add(tfKeywordSeparator, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
 
+        //-------------------------------
+        //init scope components
         add(new JLabel("Scope: "), constraintsBuilder.newRow().fillNone().width(1).build());
 
-        JPanel pnScope = new JPanel(new FlowLayout());
-        add(pnScope, constraintsBuilder.newCol().fillNone().width(1).build());
+        this.pnScope = new JPanel(new FlowLayout());
+        add(this.pnScope, constraintsBuilder.newCol().fillNone().width(1).build());
         ButtonGroup grScope = new ButtonGroup();
         //add radiobutton Document
         JRadioButton rbDocument = new JRadioButton("Document", true);
-        pnScope.add(rbDocument);
+        this.pnScope.add(rbDocument);
         grScope.add(rbDocument);
         //add radiobutton Range
         this.rbRange = new JRadioButton("Range");
-        pnScope.add(this.rbRange);
+        this.pnScope.add(this.rbRange);
         grScope.add(this.rbRange);
         //add text field "Range"
         this.tfRange = new JTextField("");
         this.tfRange.setColumns(5);
-        pnScope.add(this.tfRange);
+        this.pnScope.add(this.tfRange);
         //add EventListeners for radiobuttons
         Iterator<AbstractButton> rbGroupIterator = grScope.getElements().asIterator();
         while (rbGroupIterator.hasNext()) {
             AbstractButton radioButton = rbGroupIterator.next();
-            radioButton.addActionListener(e -> this.tfRange.setVisible(this.rbRange.isSelected()));
+            radioButton.addActionListener(e -> {
+                SwingUtilities.invokeLater(() -> {
+                    this.tfRange.setVisible(this.rbRange.isSelected());
+                    this.pnScope.updateUI();
+                });
+            });
         }
+        //add help label
+        JLabel lbScopeHelp = new JLabel("(?)");
+        lbScopeHelp.setToolTipText("Define scope, where the keywords should be: 1) in the same Document or 2) within a Range of n characters between words");
+        this.pnScope.add(lbScopeHelp);
 
+        //-------------------------------
+        //init search button
         btSearch = new JButton("Search");
         btSearch.addActionListener(new BtSearchActionListener(mainWindow));
-        add(btSearch, constraintsBuilder.newRow().fillNone().width(1).build());
+        add(btSearch, constraintsBuilder.newCol().newCol().fillHorizontal(0.1).width(1).build());
     }
 
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         this.tfRange.setVisible(this.rbRange.isSelected());
+        this.pnScope.updateUI();
+
     }
+
 }
