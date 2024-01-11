@@ -39,11 +39,15 @@ public class BtSearchActionListener implements ActionListener {
                 keywordsArray[i] = keywordsArray[i].trim().toLowerCase();
             }
 
-            mainWindow.fileSearchFuture = mainWindow.executorService.submit(() -> {
-                new PDFSearchRequest(mainWindow.outputQueue, mainWindow.errorQueue, mainWindow.cachedFilesPerFileIdentityHashCode).searchInMultipleFiles(filename, ".pdf", List.of(keywordsArray));
-                mainWindow.panelNorth.btSearch.setEnabled(true);
-                JsonUtil.marshallToFile(mainWindow.CACHED_PDF_FILENAME, mainWindow.cachedFilesPerFileIdentityHashCode);
-            });
+            new Thread(() -> {
+                try {
+                    new PDFSearchRequest(mainWindow.outputQueue, mainWindow.errorQueue, mainWindow.cachedFilesPerFileIdentityHashCode)
+                            .searchInMultipleFiles(filename, ".pdf", List.of(keywordsArray));
+                    JsonUtil.marshallToFile(mainWindow.CACHED_PDF_FILENAME, mainWindow.cachedFilesPerFileIdentityHashCode);
+                } finally {
+                    mainWindow.panelNorth.btSearch.setEnabled(true);
+                }
+            }).start();
         });
     }
 }

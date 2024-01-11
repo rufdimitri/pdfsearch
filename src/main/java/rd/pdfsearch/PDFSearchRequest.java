@@ -23,8 +23,6 @@ public class PDFSearchRequest {
         this.outputQueue = Objects.requireNonNull(outputQueue);
         this.errorQueue = Objects.requireNonNull(errorQueue);
         this.cachedFilesPerFileIdentityHashCode = Objects.requireNonNull(cachedFilesPerFileIdentityHashCode);
-        //TODO fix exception not shown
-        throw new RuntimeException("TODO: i want to see this in output");
     }
 
     public PDFSearchRequest(BlockingQueue<String> outputQueue, BlockingQueue<Throwable> errorQueue) {

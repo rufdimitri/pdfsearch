@@ -27,7 +27,6 @@ public class MainWindow extends JFrame {
     public final int initHeight;
 
     public Preferences preferences;
-    public final ExecutorService executorService = Executors.newFixedThreadPool(1, ThreadFactory.getThreadFactory(this));
     public Future<?> fileSearchFuture;
     public final BlockingQueue<String> outputQueue = new LinkedBlockingQueue<>(10);
     public final BlockingQueue<Throwable> errorQueue = new LinkedBlockingQueue<>(10);
@@ -36,6 +35,7 @@ public class MainWindow extends JFrame {
 
     public MainWindow(String title, int initWidth, int initHeight) {
         super(title);
+
         Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler.getExceptionHandler(this));
         setSize(initWidth, initHeight);
         setLocationRelativeTo(null);

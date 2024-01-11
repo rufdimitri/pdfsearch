@@ -22,10 +22,12 @@ public class MainWindowListener implements WindowListener {
     @Override
     public void windowClosing(WindowEvent e) {
         this.mainWindow.savePreferences();
-        this.mainWindow.executorService.shutdownNow();
         Optional.ofNullable(this.mainWindow.fileSearchFuture).ifPresent((future) -> future.cancel(true));
-        JsonUtil.marshallToFile(mainWindow.CACHED_PDF_FILENAME, mainWindow.cachedFilesPerFileIdentityHashCode);
+        if (!mainWindow.cachedFilesPerFileIdentityHashCode.isEmpty()) {
+            JsonUtil.marshallToFile(mainWindow.CACHED_PDF_FILENAME, mainWindow.cachedFilesPerFileIdentityHashCode);
+        }
         this.mainWindow.dispose();
+        System.exit(0);
     }
 
     @Override
