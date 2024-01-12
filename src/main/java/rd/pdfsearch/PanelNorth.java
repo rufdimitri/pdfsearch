@@ -73,7 +73,7 @@ public class PanelNorth extends JPanel {
         this.pnScope.add(this.rbRange);
         grScope.add(this.rbRange);
         //add text field "Range"
-        this.tfRange = new JTextField("");
+        this.tfRange = new JTextField("200");
         this.tfRange.setColumns(5);
         this.pnScope.add(this.tfRange);
         //add EventListeners for radiobuttons
