@@ -44,6 +44,10 @@ public class SearchScope {
         return size;
     }
 
+    public int getEndPosition() {
+        return startPosition + size;
+    }
+
     /**
      * Used to get access to the Map containing found words and their positions
      * @return the map
