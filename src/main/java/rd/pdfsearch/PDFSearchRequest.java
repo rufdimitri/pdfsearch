@@ -142,65 +142,52 @@ public class PDFSearchRequest {
      * Searches for keywords in contents, case-insensitive
      * @param contents List of pages
      * @param searchCriteria
-     * @return Map of Positions per Word
+     * @return List of SearchScope objects
      */
-    public Map<String,List<WordPosition>> searchInContents(List<String> contents, SearchCriteria searchCriteria) {
-        Map<String,List<WordPosition>> positionsPerWord = new HashMap<>();
-
+    public List<SearchScope> searchInContents(List<String> contents, SearchCriteria searchCriteria) {
         int pagePosition = 0;
         int pageNr = 1;
+        List<WordPosition> searchResults = new ArrayList<>();
         for (String pageText : contents) {
-            String pageTextLow = pageText.toLowerCase();
+            String pageTextLowerCase = pageText.toLowerCase();
 
-            for (String keyword : searchCriteria.getKeywords()) {
-                String keywordLow = keyword.toLowerCase();
-                int position = pageTextLow.indexOf(keywordLow);
-                if (position >= 0) {
-                    List<WordPosition> searchResults = positionsPerWord.getOrDefault(keyword, new ArrayList<>());
-                    searchResults.add(new WordPosition(position, pagePosition, pageNr));
-                    positionsPerWord.putIfAbsent(keyword, searchResults);
-                }
+            for (String word : searchCriteria.getKeywords()) {
+                String wordLowerCase = word.toLowerCase();
+                int position = pageTextLowerCase.indexOf(wordLowerCase);
+                if (position < 0) continue;
+
+                searchResults.add(new WordPosition(word, position, pagePosition, pageNr));
             }
 
             pagePosition += pageText.length();
             pageNr++;
         }
+        searchResults.sort(Comparator.comparingInt(WordPosition::position));
 
-        //did not find all words in this Document
-        if (positionsPerWord.size() < searchCriteria.getKeywords().size()) return Collections.emptyMap();
-        if (searchCriteria.getWordScopeType() == SearchCriteria.WordScopeType.RANGE) {
-            int rangeSize = searchCriteria.getRangeSize();
-            for (Map.Entry<String, List<WordPosition>> entry1 : positionsPerWord.entrySet()) {
-                String word1 = entry1.getKey();
-                for (WordPosition wordPosition1 : entry1.getValue()) {
-                    for (Map.Entry<String, List<WordPosition>> entry2 : positionsPerWord.entrySet()) {
-                        String word2 = entry2.getKey();
-                        for (WordPosition wordPosition2 : entry2.getValue()) {
-                            if (!word1.equals(word2) || true) {  //TODO fix debug condition
-                                System.out.format("word1: %s pos: %d / word2: %s pos2: %d / diff: %d\n",
-                                        word1, wordPosition1.getAbsolutePosition(), word2, wordPosition2.getAbsolutePosition(),
-                                        Math.abs(wordPosition1.getAbsolutePosition() - wordPosition2.getAbsolutePosition()));
-                            }
-                        }
+        List<SearchScope> searchScopes = new ArrayList<>();
+        searchResults.stream().forEachOrdered(searchResult -> {
+            //TODO fix: should create range-scope for every word and then check every word against every created scope and add word to scope if it belongs there
+            SearchScope scope = searchScopes.isEmpty() ? null : searchScopes.getLast();
+            if (scope == null || searchResult.getAbsolutePosition() > scope.getEndPosition()) {
+                switch(searchCriteria.getWordScopeType()) {
+                    case DOCUMENT: {
+                        scope = new SearchScope(0, Integer.MAX_VALUE);
+                        break;
+                    }
+                    case RANGE: {
+                        scope = new SearchScope(searchResult.getAbsolutePosition(), searchCriteria.getRangeSize());
+                        break;
+                    }
+                    default: {
+                        throw new RuntimeException("Not implemented SearchScope type: " + searchCriteria.getWordScopeType());
                     }
                 }
-
-
+                searchScopes.add(scope);
             }
-            //TODO test and compare with for-each
-            System.out.println("---------\nstream implementation");
-            positionsPerWord.values().stream().flatMap(Collection::stream).forEach(wordPosition1 -> {
-                positionsPerWord.values().stream().flatMap(Collection::stream)
-                    .filter(wordPosition2 -> wordPosition2 != wordPosition1)
-                    .forEach(wordPosition2 -> {
-                        System.out.format("pos: %d / pos2: %d / diff: %d\n",
-                                wordPosition1.getAbsolutePosition(), wordPosition2.getAbsolutePosition(),
-                                Math.abs(wordPosition1.getAbsolutePosition() - wordPosition2.getAbsolutePosition()));
-                    });
-            });
-        }
+            scope.getWordPositions().add(searchResult);
+        });
 
-        return positionsPerWord;
+        return searchScopes;
     }
 
     /**

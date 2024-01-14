@@ -1,8 +1,7 @@
 package rd.pdfsearch.model;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Scope, where words are found, it has a position, size and words + their positions that belong to this scope.
@@ -15,7 +14,7 @@ public class SearchScope {
 
     private final int startPosition;
     private final int size;
-    private final Map<String,List<WordPosition>> positionsPerWord;
+    private final List<WordPosition> wordPositions;
 
     /**
      * Creates Scope with given parameters
@@ -25,7 +24,7 @@ public class SearchScope {
     public SearchScope(int startPosition, int size) {
         this.startPosition = startPosition;
         this.size = size;
-        positionsPerWord = new HashMap<>();
+        wordPositions = new ArrayList<>();
     }
 
     /**
@@ -49,10 +48,10 @@ public class SearchScope {
     }
 
     /**
-     * Used to get access to the Map containing found words and their positions
-     * @return the map
+     * Used to get access the list containing found words and their positions
+     * @return
      */
-    public Map<String, List<WordPosition>> getPositionsPerWord() {
-        return positionsPerWord;
+    public List<WordPosition> getWordPositions() {
+        return wordPositions;
     }
 }
