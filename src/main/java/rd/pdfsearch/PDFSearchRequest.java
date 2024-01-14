@@ -164,30 +164,34 @@ public class PDFSearchRequest {
         }
         searchResults.sort(Comparator.comparingInt(WordPosition::position));
 
-        List<SearchScope> searchScopes = new ArrayList<>();
-        searchResults.stream().forEachOrdered(searchResult -> {
-            //TODO fix: should create range-scope for every word and then check every word against every created scope and add word to scope if it belongs there
-            SearchScope scope = searchScopes.isEmpty() ? null : searchScopes.getLast();
-            if (scope == null || searchResult.getAbsolutePosition() > scope.getEndPosition()) {
-                switch(searchCriteria.getWordScopeType()) {
-                    case DOCUMENT: {
-                        scope = new SearchScope(0, Integer.MAX_VALUE);
-                        break;
-                    }
-                    case RANGE: {
-                        scope = new SearchScope(searchResult.getAbsolutePosition(), searchCriteria.getRangeSize());
-                        break;
-                    }
-                    default: {
-                        throw new RuntimeException("Not implemented SearchScope type: " + searchCriteria.getWordScopeType());
-                    }
-                }
-                searchScopes.add(scope);
-            }
-            scope.getWordPositions().add(searchResult);
-        });
+        List<SearchScope> scopes = new ArrayList<>();
 
-        return searchScopes;
+        switch(searchCriteria.getWordScopeType()) {
+            case DOCUMENT: {
+                SearchScope scope = new SearchScope(0, Integer.MAX_VALUE);
+                scope.getWordPositions().addAll(searchResults);
+                scopes.add(scope);
+                return scopes;
+            }
+            case RANGE: {
+                searchResults.stream().forEachOrdered(searchResult -> {
+                    SearchScope scope = new SearchScope(searchResult.getAbsolutePosition(), searchCriteria.getRangeSize());
+                    scopes.add(scope);
+                    scopes.stream()
+                            .filter(scopeN ->
+                                scopeN.getStartPosition() <= searchResult.getAbsolutePosition()
+                                    && scopeN.getEndPosition() >= searchResult.getAbsolutePosition())
+                            .forEach(scopeN -> scopeN.getWordPositions().add(searchResult));
+                });
+
+                scopes.removeIf(scopeN -> !searchCriteria.getKeywords().stream().allMatch(scopeN::contains));
+
+                return scopes;
+            }
+            default: {
+                throw new RuntimeException("Not implemented SearchScope type: " + searchCriteria.getWordScopeType());
+            }
+        }
     }
 
     /**

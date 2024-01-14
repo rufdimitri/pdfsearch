@@ -54,4 +54,13 @@ public class SearchScope {
     public List<WordPosition> getWordPositions() {
         return wordPositions;
     }
+
+    /**
+     * Checks if a word is contained in this scope
+     * @param word
+     * @return
+     */
+    public boolean contains(String word) {
+        return getWordPositions().stream().map(WordPosition::word).anyMatch(word2 -> word2.equals(word));
+    }
 }
