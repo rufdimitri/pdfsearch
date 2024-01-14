@@ -190,11 +190,13 @@ public class PDFSearchRequest {
             //TODO test and compare with for-each
             System.out.println("---------\nstream implementation");
             positionsPerWord.values().stream().flatMap(Collection::stream).forEach(wordPosition1 -> {
-                positionsPerWord.values().stream().flatMap(Collection::stream).forEach(wordPosition2 -> {
-                    System.out.format("pos: %d / pos2: %d / diff: %d\n",
-                            wordPosition1.getAbsolutePosition(), wordPosition2.getAbsolutePosition(),
-                            Math.abs(wordPosition1.getAbsolutePosition() - wordPosition2.getAbsolutePosition()));
-                });
+                positionsPerWord.values().stream().flatMap(Collection::stream)
+                    .filter(wordPosition2 -> wordPosition2 != wordPosition1)
+                    .forEach(wordPosition2 -> {
+                        System.out.format("pos: %d / pos2: %d / diff: %d\n",
+                                wordPosition1.getAbsolutePosition(), wordPosition2.getAbsolutePosition(),
+                                Math.abs(wordPosition1.getAbsolutePosition() - wordPosition2.getAbsolutePosition()));
+                    });
             });
         }
 
