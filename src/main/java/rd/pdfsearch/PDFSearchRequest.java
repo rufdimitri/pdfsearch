@@ -68,12 +68,11 @@ public class PDFSearchRequest {
                             return FileVisitResult.CONTINUE;
                         }
 
-                        outputQueue.put(String.format("found %d entries \n", searchResult.searchResultsPerWord().size()));
+                        outputQueue.put(String.format("found %d entries \n", searchResult.searchResults().size()));
 
-                        for (Map.Entry<String, List<WordPosition>> wordSearchResult : searchResult.searchResultsPerWord().entrySet()) {
-                            outputQueue.put("found word: " + wordSearchResult.getKey());
-                            for (WordPosition wordPosition : wordSearchResult.getValue()) {
-                                outputQueue.put("  at " + wordPosition.getAbsolutePosition() + " page #: " + wordPosition.pageNumber());
+                        for (SearchScope scope : searchResult.searchResults()) {
+                            for (WordPosition position : scope.getWordPositions()) {
+                                outputQueue.put(String.format("Found '%s' at page %d", position.word(), position.pageNumber()));
                             }
                         }
 
@@ -162,7 +161,7 @@ public class PDFSearchRequest {
             pagePosition += pageText.length();
             pageNr++;
         }
-        searchResults.sort(Comparator.comparingInt(WordPosition::position));
+        searchResults.sort(Comparator.comparingInt(WordPosition::getAbsolutePosition));
 
         List<SearchScope> scopes = new ArrayList<>();
 
@@ -171,10 +170,11 @@ public class PDFSearchRequest {
                 SearchScope scope = new SearchScope(0, Integer.MAX_VALUE);
                 scope.getWordPositions().addAll(searchResults);
                 scopes.add(scope);
+                scopes.removeIf(scopeN -> !searchCriteria.getKeywords().stream().allMatch(scopeN::contains));
                 return scopes;
             }
             case RANGE: {
-                searchResults.stream().forEachOrdered(searchResult -> {
+                searchResults.forEach(searchResult -> {
                     SearchScope scope = new SearchScope(searchResult.getAbsolutePosition(), searchCriteria.getRangeSize());
                     scopes.add(scope);
                     scopes.stream()
