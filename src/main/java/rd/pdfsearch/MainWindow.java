@@ -3,7 +3,6 @@ package rd.pdfsearch;
 import com.google.gson.reflect.TypeToken;
 import rd.pdfsearch.listeners.MainWindowListener;
 import rd.pdfsearch.model.CachedPdfFile;
-import rd.pdfsearch.model.ListItem;
 import rd.pdfsearch.model.Preferences;
 import rd.util.JsonUtil;
 import rd.util.SwingUtil;
@@ -16,7 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class MainWindow extends JFrame {
     public final String PREFERENCES_FILE = "preferences.pdfsearch";
@@ -70,7 +72,7 @@ public class MainWindow extends JFrame {
         fontAttributes.put(TextAttribute.FAMILY, "Tahoma");
         fontAttributes.put(TextAttribute.SIZE, 14);
         Font font1 = Font.getFont(fontAttributes);
-        SwingUtil.changeFont(this, font1);
+        SwingUtil.changeFontRecursive(this, font1);
 
         startDaemons();
 
