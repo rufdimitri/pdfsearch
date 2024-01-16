@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import rd.pdfsearch.listeners.MainWindowListener;
 import rd.pdfsearch.model.CachedPdfFile;
 import rd.pdfsearch.model.Preferences;
+import rd.pdfsearch.model.SearchCriteria;
 import rd.util.JsonUtil;
 import rd.util.SwingUtil;
 
@@ -11,10 +12,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -54,8 +53,7 @@ public class MainWindow extends JFrame {
         } catch (Exception exception) {
             if (exception.getCause().getClass() != FileNotFoundException.class) throw exception;
 
-            preferences = new Preferences();
-            preferences.setKeywordsSeparator(",");
+            preferences = Preferences.builder().keywordsSeparator(", ").rangeSize(200).build();
         }
 
         panelNorth = new PanelNorth(this);
@@ -88,11 +86,31 @@ public class MainWindow extends JFrame {
     }
 
     public void savePreferences() {
-        preferences.setSearchLocation(panelNorth.tfSearchLocation.getText());
-        preferences.setKeywords(panelNorth.tfKeywords.getText());
-        preferences.setKeywordsSeparator(panelNorth.tfKeywordSeparator.getText());
+        preferences.setSearchLocation(this.panelNorth.tfSearchLocation.getText());
 
-        JsonUtil.marshallToFile(PREFERENCES_FILE, preferences);
+        //add regex quotation (\Q \E) to escape regex special characters that could appear in tfKeywordSeparator
+        String splitter = "\\Q" + this.panelNorth.tfKeywordSeparator.getText() + "\\E";
+
+        List<String> keywords = Arrays.stream(this.panelNorth.tfKeywords.getText().trim().split(splitter))
+                .filter(keyword -> !keyword.isBlank())
+                .map(String::toLowerCase)
+                .toList();
+
+        int rangeSize;
+        try {
+            rangeSize = Integer.parseInt(this.panelNorth.tfRange.getText());
+        } catch (NumberFormatException numberFormatException) {
+            throw new RuntimeException("Could not parse range size.", numberFormatException);
+        }
+
+        SearchCriteria searchCriteria = this.panelNorth.rbRange.isSelected()
+                ? new SearchCriteria(keywords, SearchCriteria.WordScopeType.RANGE, rangeSize)
+                : new SearchCriteria(keywords, SearchCriteria.WordScopeType.DOCUMENT, rangeSize);
+        preferences.setSearchCriteria(searchCriteria);
+
+        preferences.setKeywordsSeparator(this.panelNorth.tfKeywordSeparator.getText());
+
+        JsonUtil.marshallToFile(this.PREFERENCES_FILE, this.preferences);
     }
 
     private void startDaemons() {

@@ -2,11 +2,14 @@ package rd.pdfsearch;
 
 import com.ztz.gridbagconstraintsbuilder.GridBagContraintsBuilder;
 import rd.pdfsearch.listeners.BtSearchActionListener;
+import rd.pdfsearch.model.SearchCriteria;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.Iterator;
+
+import static rd.pdfsearch.model.SearchCriteria.WordScopeType.DOCUMENT;
 
 public class PanelNorth extends JPanel {
     public final JTextField tfSearchLocation;
@@ -50,7 +53,7 @@ public class PanelNorth extends JPanel {
         //init keywords row components
         add(new JLabel("Keywords: "), constraintsBuilder.newRow().fillNone().width(1).build());
 
-        this.tfKeywords = new JTextField(mainWindow.preferences.getKeywords());
+        this.tfKeywords = new JTextField(String.join(mainWindow.preferences.getKeywordsSeparator(), mainWindow.preferences.getSearchCriteria().getKeywords()));
         add(this.tfKeywords, constraintsBuilder.newCol().fillHorizontal(1).width(1).build());
 
         add(new JLabel("Keywords separator: "), constraintsBuilder.newCol().fillNone().width(1).build());
@@ -65,15 +68,15 @@ public class PanelNorth extends JPanel {
         add(this.pnScope, constraintsBuilder.newCol().fillNone().width(1).build());
         ButtonGroup grScope = new ButtonGroup();
         //add radiobutton Document
-        JRadioButton rbDocument = new JRadioButton("Document", true);
+        JRadioButton rbDocument = new JRadioButton("Document", mainWindow.preferences.getSearchCriteria().getWordScopeType() == DOCUMENT);
         this.pnScope.add(rbDocument);
         grScope.add(rbDocument);
         //add radiobutton Range
-        this.rbRange = new JRadioButton("Range");
+        this.rbRange = new JRadioButton("Range", !rbDocument.isSelected());
         this.pnScope.add(this.rbRange);
         grScope.add(this.rbRange);
         //add text field "Range"
-        this.tfRange = new JTextField("200");
+        this.tfRange = new JTextField(Integer.toString(mainWindow.preferences.getSearchCriteria().getRangeSize()));
         this.tfRange.setColumns(5);
         this.pnScope.add(this.tfRange);
         //add EventListeners for radiobuttons
