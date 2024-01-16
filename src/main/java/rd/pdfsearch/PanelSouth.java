@@ -8,12 +8,14 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Objects;
 
 public class PanelSouth extends JPanel {
     public final JList<ListItem> outputList;
     public final DefaultListModel<ListItem> outputListModel = new DefaultListModel<>();
     private boolean fixedCellHeightSet = false;
-    private boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+    private final boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
 
     public PanelSouth(MainWindow mainWindow) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -31,9 +33,9 @@ public class PanelSouth extends JPanel {
                     if (selectedValue != null && selectedValue.getPath() != null) {
                         if (isWindows) {
                             try {
-                                Runtime.getRuntime().exec(String.format("cmd.exe /c start \"\" \"%s\"", selectedValue.getPath()));
+                                Runtime.getRuntime().exec(new String[] {"cmd.exe", "/c", "start", "", selectedValue.getPath().toString()});
                             } catch (IOException ex) {
-                                PanelSouth.this.writeOutput(new ListItem(ex));
+                                PanelSouth.this.writeOutput(ex);
                             }
                         }
                     }
@@ -46,9 +48,27 @@ public class PanelSouth extends JPanel {
         add(scrollPane);
     }
 
-    public void writeOutput(ListItem listItem) {
+    /**
+     * Add new element to output list
+     * @param object (NotNull) object of one of types: Throwable, String, Path, ListItem
+     *
+     */
+    public void writeOutput(Object object) {
+        Objects.requireNonNull(object);
+        ListItem element;
+        if (object instanceof Throwable) {
+            element = new ListItem((Throwable) object);
+        } else if (object instanceof String) {
+            element = new ListItem((String) object);
+        } else if (object instanceof Path) {
+            element = new ListItem((Path) object);
+        } else if (object instanceof ListItem) {
+            element = (ListItem) object;
+        } else {
+            element = new ListItem(new RuntimeException("Unknown output type: " + object.getClass().getName()));
+        }
         synchronized (outputListModel) {
-            outputListModel.addElement(listItem);
+            outputListModel.addElement(element);
         }
     }
 

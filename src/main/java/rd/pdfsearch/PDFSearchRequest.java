@@ -12,17 +12,17 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
 public class PDFSearchRequest {
-    private final BlockingQueue<ListItem> outputQueue;
-    private final BlockingQueue<ListItem> errorQueue;
+    private final BlockingQueue<Object> outputQueue;
+    private final BlockingQueue<Throwable> errorQueue;
     private Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode;
 
-    public PDFSearchRequest(BlockingQueue<ListItem> outputQueue, BlockingQueue<ListItem> errorQueue, Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode) {
+    public PDFSearchRequest(BlockingQueue<Object> outputQueue, BlockingQueue<Throwable> errorQueue, Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode) {
         this.outputQueue = Objects.requireNonNull(outputQueue);
         this.errorQueue = Objects.requireNonNull(errorQueue);
         this.cachedFilesPerFileIdentityHashCode = Objects.requireNonNull(cachedFilesPerFileIdentityHashCode);
     }
 
-    public PDFSearchRequest(BlockingQueue<ListItem> outputQueue, BlockingQueue<ListItem> errorQueue) {
+    public PDFSearchRequest(BlockingQueue<Object> outputQueue, BlockingQueue<Throwable> errorQueue) {
         this.outputQueue = Objects.requireNonNull(outputQueue);
         this.errorQueue = Objects.requireNonNull(errorQueue);
         this.cachedFilesPerFileIdentityHashCode = new HashMap<>();
@@ -44,12 +44,13 @@ public class PDFSearchRequest {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     try {
+                        Thread.sleep(1); //give some time so daemons can take messages from the message queue
                         if (!Files.isRegularFile(file) || !file.toString().endsWith(fileExtension))
                             return FileVisitResult.CONTINUE;
 
                         SearchResult searchResult;
                         try {
-                            outputQueue.put(new ListItem(""));
+                            outputQueue.put("");
                             List<String> pagesContent;
                             CachedPdfFile cachedPdfFile = getCachedPdfFile(file);
                             if (cachedPdfFile == null) {
@@ -63,16 +64,16 @@ public class PDFSearchRequest {
 
                             searchResult = new SearchResult(file.toString(), searchInContents(pagesContent, searchCriteria));
                         } catch (Exception exception) {
-                            errorQueue.put(new ListItem(exception));
+                            errorQueue.put(exception);
                             exception.printStackTrace();
                             return FileVisitResult.CONTINUE;
                         }
 
-                        outputQueue.put(new ListItem(String.format(" found %d entries \n", searchResult.searchResults().size())));
+                        outputQueue.put(String.format(" found %d entries \n", searchResult.searchResults().size()));
 
                         for (SearchScope scope : searchResult.searchResults()) {
                             for (WordPosition position : scope.getWordPositions()) {
-                                outputQueue.put(new ListItem(String.format(" - found '%s' at page %d", position.word(), position.pageNumber())));
+                                outputQueue.put(String.format(" - found '%s' at page %d", position.word(), position.pageNumber()));
                             }
                         }
                         return FileVisitResult.CONTINUE;
@@ -84,7 +85,7 @@ public class PDFSearchRequest {
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                     try {
-                        errorQueue.put(new ListItem(exc));
+                        errorQueue.put(exc);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }

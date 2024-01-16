@@ -29,8 +29,8 @@ public class MainWindow extends JFrame {
 
     public Preferences preferences;
     public Future<?> fileSearchFuture;
-    public final BlockingQueue<ListItem> outputQueue = new LinkedBlockingQueue<>(10);
-    public final BlockingQueue<ListItem> errorQueue = new LinkedBlockingQueue<>(10);
+    public final BlockingQueue<Object> outputQueue = new LinkedBlockingQueue<>(10);
+    public final BlockingQueue<Throwable> errorQueue = new LinkedBlockingQueue<>(10);
     public Map<Integer, List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode = new HashMap<>();
 
 
@@ -97,12 +97,12 @@ public class MainWindow extends JFrame {
         Thread outputReader = new Thread(() -> {
             while (true) {
                 try {
-                    ListItem listItem = outputQueue.poll(100, TimeUnit.MILLISECONDS);
-                    if (!Objects.isNull(listItem)) {
-                        panelSouth.writeOutput(listItem);
+                    Object outputObject = outputQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (!Objects.isNull(outputObject)) {
+                        panelSouth.writeOutput(outputObject);
                     }
                 } catch (Exception exception) {
-                    panelSouth.writeOutput(new ListItem(exception));
+                    panelSouth.writeOutput(exception);
                 }
             }
         });
@@ -113,12 +113,12 @@ public class MainWindow extends JFrame {
         Thread errorReader = new Thread(() -> {
             while (true) {
                 try {
-                    ListItem listItem = errorQueue.poll(100, TimeUnit.MILLISECONDS);;
-                    if (!Objects.isNull(listItem)) {
-                        panelSouth.writeOutput(listItem);
+                    Object outputObject = errorQueue.poll(100, TimeUnit.MILLISECONDS);;
+                    if (!Objects.isNull(outputObject)) {
+                        panelSouth.writeOutput(outputObject);
                     }
                 } catch (Exception exception) {
-                    panelSouth.writeOutput(new ListItem(exception));
+                    panelSouth.writeOutput(exception);
                 }
             }
         });

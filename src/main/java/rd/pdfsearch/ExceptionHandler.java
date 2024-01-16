@@ -29,6 +29,6 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         exception.printStackTrace(new PrintStream(baos, true, StandardCharsets.UTF_8));
         String output = baos.toString(StandardCharsets.UTF_8);
-        mainWindow.panelSouth.writeOutput(new ListItem(exception));
+        mainWindow.panelSouth.writeOutput(exception);
     }
 }
