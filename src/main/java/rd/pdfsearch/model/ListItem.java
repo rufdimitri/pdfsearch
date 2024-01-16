@@ -19,7 +19,7 @@ public class ListItem {
         t.printStackTrace(System.err);
     }
 
-    private ListItem(String text, Path path) {
+    public ListItem(String text, Path path) {
         this.text = text;
         this.path = path;
     }
