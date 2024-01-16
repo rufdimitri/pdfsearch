@@ -1,13 +1,15 @@
 package rd.pdfsearch;
 
+import rd.pdfsearch.model.ListItem;
 import rd.util.SwingUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Path;
 
 public class PanelSouth extends JPanel {
-    public final JList<String> outputList;
-    public final DefaultListModel<String> outputListModel = new DefaultListModel<>();
+    public final JList<ListItem> outputList;
+    public final DefaultListModel<ListItem> outputListModel = new DefaultListModel<>();
     private boolean fixedCellHeightSet = false;
 
     public PanelSouth(MainWindow mainWindow) {
@@ -25,18 +27,10 @@ public class PanelSouth extends JPanel {
         add(scrollPane);
     }
 
-    public void outputPrintln(String line) {
+    public void writeOutput(ListItem listItem) {
         synchronized (outputListModel) {
-            outputListModel.addElement(line);
+            outputListModel.addElement(listItem);
         }
-    }
-
-    public void outputError(Throwable t) {
-        String line = "Error: " + t.toString() + " " + t.getMessage();
-        synchronized (outputListModel) {
-            outputListModel.addElement(line);
-        }
-        t.printStackTrace(System.err);
     }
 
     public void clearOutput() {

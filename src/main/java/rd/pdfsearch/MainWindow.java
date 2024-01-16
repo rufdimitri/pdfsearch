@@ -3,6 +3,7 @@ package rd.pdfsearch;
 import com.google.gson.reflect.TypeToken;
 import rd.pdfsearch.listeners.MainWindowListener;
 import rd.pdfsearch.model.CachedPdfFile;
+import rd.pdfsearch.model.ListItem;
 import rd.pdfsearch.model.Preferences;
 import rd.util.JsonUtil;
 import rd.util.SwingUtil;
@@ -28,8 +29,8 @@ public class MainWindow extends JFrame {
 
     public Preferences preferences;
     public Future<?> fileSearchFuture;
-    public final BlockingQueue<String> outputQueue = new LinkedBlockingQueue<>(10);
-    public final BlockingQueue<Throwable> errorQueue = new LinkedBlockingQueue<>(10);
+    public final BlockingQueue<ListItem> outputQueue = new LinkedBlockingQueue<>(10);
+    public final BlockingQueue<ListItem> errorQueue = new LinkedBlockingQueue<>(10);
     public Map<Integer, List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode = new HashMap<>();
 
 
@@ -96,12 +97,12 @@ public class MainWindow extends JFrame {
         Thread outputReader = new Thread(() -> {
             while (true) {
                 try {
-                    String outputLine = outputQueue.poll(100, TimeUnit.MILLISECONDS);
-                    if (!Objects.isNull(outputLine)) {
-                        panelSouth.outputPrintln(outputLine);
+                    ListItem listItem = outputQueue.poll(100, TimeUnit.MILLISECONDS);
+                    if (!Objects.isNull(listItem)) {
+                        panelSouth.writeOutput(listItem);
                     }
                 } catch (Exception exception) {
-                    panelSouth.outputError(exception);
+                    panelSouth.writeOutput(new ListItem(exception));
                 }
             }
         });
@@ -112,12 +113,12 @@ public class MainWindow extends JFrame {
         Thread errorReader = new Thread(() -> {
             while (true) {
                 try {
-                    Throwable error = errorQueue.poll(100, TimeUnit.MILLISECONDS);;
-                    if (!Objects.isNull(error)) {
-                        panelSouth.outputError(error);
+                    ListItem listItem = errorQueue.poll(100, TimeUnit.MILLISECONDS);;
+                    if (!Objects.isNull(listItem)) {
+                        panelSouth.writeOutput(listItem);
                     }
                 } catch (Exception exception) {
-                    panelSouth.outputError(exception);
+                    panelSouth.writeOutput(new ListItem(exception));
                 }
             }
         });

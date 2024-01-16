@@ -1,5 +1,7 @@
 package rd.pdfsearch;
 
+import rd.pdfsearch.model.ListItem;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +29,6 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         exception.printStackTrace(new PrintStream(baos, true, StandardCharsets.UTF_8));
         String output = baos.toString(StandardCharsets.UTF_8);
-        mainWindow.panelSouth.outputError(exception);
+        mainWindow.panelSouth.writeOutput(new ListItem(exception));
     }
 }

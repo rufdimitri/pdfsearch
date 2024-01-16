@@ -12,17 +12,17 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
 public class PDFSearchRequest {
-    private final BlockingQueue<String> outputQueue;
-    private final BlockingQueue<Throwable> errorQueue;
+    private final BlockingQueue<ListItem> outputQueue;
+    private final BlockingQueue<ListItem> errorQueue;
     private Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode;
 
-    public PDFSearchRequest(BlockingQueue<String> outputQueue, BlockingQueue<Throwable> errorQueue, Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode) {
+    public PDFSearchRequest(BlockingQueue<ListItem> outputQueue, BlockingQueue<ListItem> errorQueue, Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode) {
         this.outputQueue = Objects.requireNonNull(outputQueue);
         this.errorQueue = Objects.requireNonNull(errorQueue);
         this.cachedFilesPerFileIdentityHashCode = Objects.requireNonNull(cachedFilesPerFileIdentityHashCode);
     }
 
-    public PDFSearchRequest(BlockingQueue<String> outputQueue, BlockingQueue<Throwable> errorQueue) {
+    public PDFSearchRequest(BlockingQueue<ListItem> outputQueue, BlockingQueue<ListItem> errorQueue) {
         this.outputQueue = Objects.requireNonNull(outputQueue);
         this.errorQueue = Objects.requireNonNull(errorQueue);
         this.cachedFilesPerFileIdentityHashCode = new HashMap<>();
@@ -49,33 +49,33 @@ public class PDFSearchRequest {
 
                         SearchResult searchResult;
                         try {
+                            outputQueue.put(new ListItem(""));
                             List<String> pagesContent;
                             CachedPdfFile cachedPdfFile = getCachedPdfFile(file);
                             if (cachedPdfFile == null) {
-                                outputQueue.put("file = " + file.toString());
+                                outputQueue.put(new ListItem(file.getFileName() + " : " + file.getParent().toAbsolutePath() + " (cached version)"));
                                 pagesContent = getPdfPagesContent(file);
                                 cachePdfFile(pagesContent, file);
                             } else {
-                                outputQueue.put("file = " + file.toString() + " (cached version)");
+                                outputQueue.put(new ListItem(file.getFileName() + " : " + file.getParent().toAbsolutePath() + " (cached version)"));
                                 pagesContent = cachedPdfFile.pagesContent();
                             }
 
                             searchResult = new SearchResult(file.toString(), searchInContents(pagesContent, searchCriteria));
                         } catch (Exception exception) {
-                            errorQueue.put(exception);
+                            errorQueue.put(new ListItem(exception));
                             exception.printStackTrace();
                             System.out.println("errorQueue: " + errorQueue.size());
                             return FileVisitResult.CONTINUE;
                         }
 
-                        outputQueue.put(String.format("found %d entries \n", searchResult.searchResults().size()));
+                        outputQueue.put(new ListItem(String.format(" found %d entries \n", searchResult.searchResults().size())));
 
                         for (SearchScope scope : searchResult.searchResults()) {
                             for (WordPosition position : scope.getWordPositions()) {
-                                outputQueue.put(String.format("Found '%s' at page %d", position.word(), position.pageNumber()));
+                                outputQueue.put(new ListItem(String.format(" - found '%s' at page %d", position.word(), position.pageNumber())));
                             }
                         }
-
                         return FileVisitResult.CONTINUE;
                     } catch (Throwable throwable) {
                         throw new RuntimeException(throwable);
@@ -85,7 +85,7 @@ public class PDFSearchRequest {
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                     try {
-                        errorQueue.put(exc);
+                        errorQueue.put(new ListItem(exc));
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
