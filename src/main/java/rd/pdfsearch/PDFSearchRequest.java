@@ -65,7 +65,6 @@ public class PDFSearchRequest {
                         } catch (Exception exception) {
                             errorQueue.put(new ListItem(exception));
                             exception.printStackTrace();
-                            System.out.println("errorQueue: " + errorQueue.size());
                             return FileVisitResult.CONTINUE;
                         }
 
