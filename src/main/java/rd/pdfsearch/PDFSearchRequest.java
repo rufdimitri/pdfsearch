@@ -53,7 +53,7 @@ public class PDFSearchRequest {
                             List<String> pagesContent;
                             CachedPdfFile cachedPdfFile = getCachedPdfFile(file);
                             if (cachedPdfFile == null) {
-                                outputQueue.put(new ListItem(file.getFileName() + " : " + file.getParent().toAbsolutePath() + " (cached version)"));
+                                outputQueue.put(new ListItem(file.getFileName() + " : " + file.getParent().toAbsolutePath()));
                                 pagesContent = getPdfPagesContent(file);
                                 cachePdfFile(pagesContent, file);
                             } else {
