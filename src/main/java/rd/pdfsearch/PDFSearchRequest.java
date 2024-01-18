@@ -87,7 +87,13 @@ public class PDFSearchRequest {
                         }
                         return FileVisitResult.CONTINUE;
                     } catch (Throwable throwable) {
-                        throw new RuntimeException(file.toAbsolutePath().toString(), throwable);
+                        try {
+                            errorQueue.put(new RuntimeException(file.toAbsolutePath().toString(), throwable));
+                            return FileVisitResult.CONTINUE;
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+//                        throw new RuntimeException(file.toAbsolutePath().toString(), throwable);
                     }
                 }
 
