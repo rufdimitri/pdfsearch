@@ -15,7 +15,8 @@ public class ListItem {
     }
 
     public ListItem (Throwable t) {
-        this("Error: " + t.toString() + " " + t.getMessage(), null);
+        this.text = "Error: " + getAllExceptionCauses(new StringBuilder(), t).toString();
+        this.path = null;
         t.printStackTrace(System.err);
     }
 
@@ -35,5 +36,18 @@ public class ListItem {
 
     public String getText() {
         return text;
+    }
+
+    private StringBuilder getAllExceptionCauses(StringBuilder collector, Throwable throwable) {
+        System.out.println("collector " + collector.toString());
+        collector.append(throwable.toString());
+        collector.append(". ");
+        Throwable cause = throwable.getCause();
+        if (cause != null) {
+            collector.append(cause.toString());
+            collector.append(". ");
+            return getAllExceptionCauses(collector, cause);
+        }
+        return collector;
     }
 }

@@ -96,7 +96,7 @@ public class PDFSearchRequest {
                     try {
                         errorQueue.put(exc);
                     } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                        throw new RuntimeException(file.toAbsolutePath().toString(), e);
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -223,7 +223,7 @@ public class PDFSearchRequest {
             }
             return contents;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(file.toAbsolutePath().toString(), e);
         }
     }
 }
