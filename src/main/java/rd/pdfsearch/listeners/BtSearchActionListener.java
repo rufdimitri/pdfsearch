@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class BtSearchActionListener implements ActionListener {
     private final MainWindow mainWindow;
@@ -23,6 +24,7 @@ public class BtSearchActionListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         SwingUtilities.invokeLater(() -> {
             try {
+                mainWindow.updateStatus("Search started. Loading caches.");
                 mainWindow.panelNorth.btSearch.setEnabled(false);
                 mainWindow.panelSouth.clearOutput();
                 mainWindow.savePreferences();
@@ -35,9 +37,12 @@ public class BtSearchActionListener implements ActionListener {
                 SearchCriteria searchCriteria = mainWindow.preferences.getSearchCriteria();
 
                 new Thread(() -> {
-                    new PDFSearchRequest(mainWindow.outputQueue, mainWindow.errorQueue, mainWindow.cachedFilesPerFileIdentityHashCode)
+                    Consumer<String> updateStatus = mainWindow::updateStatus;
+                    new PDFSearchRequest(mainWindow.outputQueue, mainWindow.errorQueue, mainWindow.cachedFilesPerFileIdentityHashCode, updateStatus)
                             .searchInMultipleFiles(filename, ".pdf", searchCriteria);
+                    mainWindow.updateStatus("Search finished. Saving caches.");
                     JsonUtil.marshallToFile(mainWindow.CACHED_PDF_FILENAME, mainWindow.cachedFilesPerFileIdentityHashCode);
+                    mainWindow.updateStatus("Caches saved.");
                 }).start();
             } finally {
                 mainWindow.panelNorth.btSearch.setEnabled(true);

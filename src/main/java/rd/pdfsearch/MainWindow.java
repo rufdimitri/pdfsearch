@@ -147,4 +147,8 @@ public class MainWindow extends JFrame {
         errorReader.start();
     }
 
+    public void updateStatus(String text) {
+        this.panelNorth.lbStatus.setText(text);
+    }
+
 }

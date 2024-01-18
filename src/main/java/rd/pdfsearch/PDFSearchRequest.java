@@ -10,22 +10,30 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.function.Consumer;
 
 public class PDFSearchRequest {
     private final BlockingQueue<Object> outputQueue;
     private final BlockingQueue<Throwable> errorQueue;
     private Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode;
+    private Consumer<String> updateStatus;
 
-    public PDFSearchRequest(BlockingQueue<Object> outputQueue, BlockingQueue<Throwable> errorQueue, Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode) {
+    public PDFSearchRequest(BlockingQueue<Object> outputQueue,
+                            BlockingQueue<Throwable> errorQueue,
+                            Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode,
+                            Consumer<String> updateStatus
+    ) {
         this.outputQueue = Objects.requireNonNull(outputQueue);
         this.errorQueue = Objects.requireNonNull(errorQueue);
         this.cachedFilesPerFileIdentityHashCode = Objects.requireNonNull(cachedFilesPerFileIdentityHashCode);
+        this.updateStatus = updateStatus;
     }
 
     public PDFSearchRequest(BlockingQueue<Object> outputQueue, BlockingQueue<Throwable> errorQueue) {
         this.outputQueue = Objects.requireNonNull(outputQueue);
         this.errorQueue = Objects.requireNonNull(errorQueue);
         this.cachedFilesPerFileIdentityHashCode = new HashMap<>();
+        this.updateStatus = (text) -> {};
     }
 
     /**
@@ -50,15 +58,14 @@ public class PDFSearchRequest {
 
                         SearchResult searchResult;
                         try {
-                            outputQueue.put("");
                             List<String> pagesContent;
                             CachedPdfFile cachedPdfFile = getCachedPdfFile(file);
                             if (cachedPdfFile == null) {
-                                outputQueue.put(new ListItem(file.getFileName() + " : " + file.getParent().toAbsolutePath(), file));
+                                updateStatus.accept("Searching in " + file.toAbsolutePath().toString() + "...");
                                 pagesContent = getPdfPagesContent(file);
                                 cachePdfFile(pagesContent, file);
                             } else {
-                                outputQueue.put(new ListItem(file.getFileName() + " : " + file.getParent().toAbsolutePath() + " (cached version)", file));
+                                updateStatus.accept("Searching in " + file.toAbsolutePath().toString() + " (cached version)...");
                                 pagesContent = cachedPdfFile.pagesContent();
                             }
 
@@ -69,7 +76,9 @@ public class PDFSearchRequest {
                             return FileVisitResult.CONTINUE;
                         }
 
-                        outputQueue.put(String.format(" found %d entries \n", searchResult.searchResults().size()));
+                        if (!searchResult.searchResults().isEmpty()) {
+                            outputQueue.put(new ListItem(String.format("Found %d entries in \"%s\"\n", searchResult.searchResults().size(), file.toAbsolutePath()), file));
+                        }
 
                         for (SearchScope scope : searchResult.searchResults()) {
                             for (WordPosition position : scope.getWordPositions()) {
@@ -78,7 +87,7 @@ public class PDFSearchRequest {
                         }
                         return FileVisitResult.CONTINUE;
                     } catch (Throwable throwable) {
-                        throw new RuntimeException(throwable);
+                        throw new RuntimeException(file.toAbsolutePath().toString(), throwable);
                     }
                 }
 

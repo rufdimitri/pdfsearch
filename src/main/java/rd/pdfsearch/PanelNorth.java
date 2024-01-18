@@ -22,6 +22,7 @@ public class PanelNorth extends JPanel {
     public final JTextField tfRange;
     public final JRadioButton rbRange;
     public final JPanel pnScope;
+    public final JLabel lbStatus;
 
     public PanelNorth(MainWindow mainWindow) {
         setLayout(new GridBagLayout());
@@ -100,6 +101,10 @@ public class PanelNorth extends JPanel {
         this.btSearch = new JButton("Search");
         this.btSearch.addActionListener(new BtSearchActionListener(mainWindow));
         add(this.btSearch, constraintsBuilder.newCol().newCol().fillHorizontal(0.1).width(1).build());
+        //-------------------------------
+        //init status bar
+        this.lbStatus = new JLabel(" ");
+        add(this.lbStatus, constraintsBuilder.newRow().fillHorizontal(1).width(0).build());
     }
 
     @Override
