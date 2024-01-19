@@ -33,7 +33,7 @@ public class MainWindow extends JFrame {
     public final BlockingQueue<Object> outputQueue = new LinkedBlockingQueue<>(10);
     public final BlockingQueue<Throwable> errorQueue = new LinkedBlockingQueue<>(10);
     public Map<Integer, List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode = new HashMap<>();
-
+    private PDFSearchRequest searchRequest;
 
     public MainWindow(String title, int initWidth, int initHeight) {
         super(title);
@@ -149,6 +149,18 @@ public class MainWindow extends JFrame {
 
     public void updateStatus(String text) {
         this.panelNorth.lbStatus.setText(text);
+    }
+
+    public PDFSearchRequest getSearchRequest() {
+        synchronized (this) {
+            return searchRequest;
+        }
+    }
+
+    public void setSearchRequest(PDFSearchRequest searchRequest) {
+        synchronized (this) {
+            this.searchRequest = searchRequest;
+        }
     }
 
 }

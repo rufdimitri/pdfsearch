@@ -1,6 +1,7 @@
 package rd.pdfsearch.listeners;
 
 import rd.pdfsearch.MainWindow;
+import rd.pdfsearch.PDFSearchRequest;
 import rd.util.JsonUtil;
 
 import javax.swing.*;
@@ -24,6 +25,7 @@ public class MainWindowListener implements WindowListener {
     public void windowClosing(WindowEvent e) {
         this.mainWindow.updateStatus("Saving settings and closing...");
         SwingUtilities.invokeLater(() -> {
+            Optional.ofNullable(mainWindow.getSearchRequest()).ifPresent(PDFSearchRequest::interruptSearch);
             this.mainWindow.savePreferences();
             Optional.ofNullable(this.mainWindow.fileSearchFuture).ifPresent((future) -> future.cancel(true));
             if (!mainWindow.cachedFilesPerFileIdentityHashCode.isEmpty()) {

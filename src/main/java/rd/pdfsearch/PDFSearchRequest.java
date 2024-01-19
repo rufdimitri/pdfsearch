@@ -17,6 +17,8 @@ public class PDFSearchRequest {
     private final BlockingQueue<Throwable> errorQueue;
     private Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode;
     private Consumer<String> updateStatus;
+    private boolean canceled = false;
+    private Thread searchThread;
 
     public PDFSearchRequest(BlockingQueue<Object> outputQueue,
                             BlockingQueue<Throwable> errorQueue,
@@ -36,12 +38,33 @@ public class PDFSearchRequest {
         this.updateStatus = (text) -> {};
     }
 
+    /** Cancels current search (searchInMultipleFiles) if started.
+     *  after this method was called, it's not possible to use searchInMultipleFiles() on this object.
+     */
+    public void interruptSearch() {
+        synchronized (this) {
+            this.canceled = true;
+            try {
+                outputQueue.put("Search canceled");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } finally {
+                this.searchThread.interrupt();
+            }
+        }
+    }
+
+    public Thread getSearchThread() {
+        return searchThread;
+    }
+
     /**
      * @param path path where to search for files
      * @param fileExtension filter: only search in files with this extension (e.g  ".pdf"). Leave empty string to ignore this parameter
      * @param searchCriteria
      */
     public void searchInMultipleFiles(String path, String fileExtension, SearchCriteria searchCriteria) {
+        this.searchThread = Thread.currentThread();
         try {
             Files.walkFileTree(Paths.get(path), new FileVisitor<>() {
                 @Override
@@ -52,6 +75,9 @@ public class PDFSearchRequest {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     try {
+                        if (PDFSearchRequest.this.canceled || PDFSearchRequest.this.searchThread.isInterrupted()) {
+                            return FileVisitResult.TERMINATE;
+                        }
                         Thread.sleep(1); //give some time so daemons can take messages from the message queue
                         if (!Files.isRegularFile(file) || !file.toString().endsWith(fileExtension))
                             return FileVisitResult.CONTINUE;
@@ -100,7 +126,7 @@ public class PDFSearchRequest {
                 @Override
                 public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                     try {
-                        errorQueue.put(exc);
+                        errorQueue.put(new RuntimeException(file.toAbsolutePath().toString(), exc));
                     } catch (InterruptedException e) {
                         throw new RuntimeException(file.toAbsolutePath().toString(), e);
                     }

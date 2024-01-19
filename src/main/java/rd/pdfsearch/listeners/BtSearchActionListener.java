@@ -23,30 +23,28 @@ public class BtSearchActionListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         SwingUtilities.invokeLater(() -> {
-            try {
-                mainWindow.updateStatus("Search started. Loading caches.");
-                mainWindow.panelNorth.btSearch.setEnabled(false);
-                mainWindow.panelSouth.clearOutput();
-                mainWindow.savePreferences();
-                if (mainWindow.cachedFilesPerFileIdentityHashCode == null || mainWindow.cachedFilesPerFileIdentityHashCode.isEmpty()) {
-                    mainWindow.cachedFilesPerFileIdentityHashCode = JsonUtil.unmarshallFromFileOrDefault(mainWindow.CACHED_PDF_FILENAME, new TypeToken<>() {
-                    }, new HashMap<>());
-                }
-                String filename = mainWindow.panelNorth.tfSearchLocation.getText().replaceAll("\"", "");
-
-                SearchCriteria searchCriteria = mainWindow.preferences.getSearchCriteria();
-
-                new Thread(() -> {
-                    Consumer<String> updateStatus = mainWindow::updateStatus;
-                    new PDFSearchRequest(mainWindow.outputQueue, mainWindow.errorQueue, mainWindow.cachedFilesPerFileIdentityHashCode, updateStatus)
-                            .searchInMultipleFiles(filename, ".pdf", searchCriteria);
-                    mainWindow.updateStatus("Search finished. Saving caches.");
-                    JsonUtil.marshallToFile(mainWindow.CACHED_PDF_FILENAME, mainWindow.cachedFilesPerFileIdentityHashCode);
-                    mainWindow.updateStatus("Caches saved.");
-                }).start();
-            } finally {
-                mainWindow.panelNorth.btSearch.setEnabled(true);
+            mainWindow.updateStatus("Search started. Loading caches.");
+            mainWindow.panelNorth.btSearch.setEnabled(false);
+            mainWindow.panelSouth.clearOutput();
+            mainWindow.savePreferences();
+            if (mainWindow.cachedFilesPerFileIdentityHashCode == null || mainWindow.cachedFilesPerFileIdentityHashCode.isEmpty()) {
+                mainWindow.cachedFilesPerFileIdentityHashCode = JsonUtil.unmarshallFromFileOrDefault(mainWindow.CACHED_PDF_FILENAME, new TypeToken<>() {
+                }, new HashMap<>());
             }
+            String filename = mainWindow.panelNorth.tfSearchLocation.getText().replaceAll("\"", "");
+
+            SearchCriteria searchCriteria = mainWindow.preferences.getSearchCriteria();
+
+            Consumer<String> updateStatus = mainWindow::updateStatus;
+            new Thread(() -> {
+                PDFSearchRequest searchRequest = new PDFSearchRequest(mainWindow.outputQueue, mainWindow.errorQueue, mainWindow.cachedFilesPerFileIdentityHashCode, updateStatus);
+                mainWindow.setSearchRequest(searchRequest);
+                searchRequest.searchInMultipleFiles(filename, ".pdf", searchCriteria);
+                mainWindow.updateStatus("Search finished. Saving caches.");
+                JsonUtil.marshallToFile(mainWindow.CACHED_PDF_FILENAME, mainWindow.cachedFilesPerFileIdentityHashCode);
+                mainWindow.updateStatus("Caches saved.");
+                mainWindow.panelNorth.btSearch.setEnabled(true);
+            }).start();
         });
     }
 }
