@@ -17,7 +17,6 @@ public class PDFSearchRequest {
     private final BlockingQueue<Throwable> errorQueue;
     private Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode;
     private Consumer<String> updateStatus;
-    private boolean canceled = false;
     private Thread searchThread;
 
     public PDFSearchRequest(BlockingQueue<Object> outputQueue,
@@ -43,7 +42,6 @@ public class PDFSearchRequest {
      */
     public void interruptSearch() {
         synchronized (this) {
-            this.canceled = true;
             try {
                 outputQueue.put("Search canceled");
             } catch (InterruptedException e) {
@@ -75,7 +73,7 @@ public class PDFSearchRequest {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     try {
-                        if (PDFSearchRequest.this.canceled || PDFSearchRequest.this.searchThread.isInterrupted()) {
+                        if (PDFSearchRequest.this.searchThread.isInterrupted()) {
                             return FileVisitResult.TERMINATE;
                         }
                         Thread.sleep(1); //give some time so daemons can take messages from the message queue
