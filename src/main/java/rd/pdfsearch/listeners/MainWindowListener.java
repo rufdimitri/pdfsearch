@@ -23,17 +23,20 @@ public class MainWindowListener implements WindowListener {
 
     @Override
     public void windowClosing(WindowEvent e) {
-        this.mainWindow.updateStatus("Saving settings and closing...");
-        SwingUtilities.invokeLater(() -> {
+        try {
+            this.mainWindow.updateStatus("Saving settings and closing...");
             Optional.ofNullable(mainWindow.getSearchRequest()).ifPresent(PDFSearchRequest::interruptSearch);
             this.mainWindow.savePreferences();
             Optional.ofNullable(this.mainWindow.fileSearchFuture).ifPresent((future) -> future.cancel(true));
             if (!mainWindow.cachedFilesPerFileIdentityHashCode.isEmpty()) {
                 JsonUtil.marshallToFile(mainWindow.CACHED_PDF_FILENAME, mainWindow.cachedFilesPerFileIdentityHashCode);
             }
+        } catch (Exception exception) {
+            JOptionPane.showMessageDialog(null, "Error: " + exception.toString(), mainWindow.getTitle(), JOptionPane.ERROR_MESSAGE);
+        } finally {
             this.mainWindow.dispose();
             System.exit(0);
-        });
+        }
     }
 
     @Override

@@ -4,7 +4,7 @@
 
   <groupId>rd.pdfsearch</groupId>
   <artifactId>pdfSearch</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>240130</version>
   <packaging>jar</packaging>
 
   <name>pdfSearch</name>
