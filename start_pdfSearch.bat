@@ -1,1 +1,2 @@
-java -jar target/pdfSearch2-1.0-SNAPSHOT.jar
+java -jar target/pdfSearch-1.0-SNAPSHOT.jar
+pause
