@@ -13,6 +13,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.source>17</maven.compiler.source>
+    <librariesPath>lib/</librariesPath>
   </properties>
 
   <dependencies>
@@ -39,20 +40,59 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
+      <plugin> <!-- creates ...jar-with-dependencies.jar file where all dependencies are included-->
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>pdfSearch-with-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>rd.pdfsearch.AppPdfSearch</mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin> <!-- creates Manifest with classpath and Main-class inside .jar  -->
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.3.0</version>
         <configuration>
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
+              <classpathPrefix>${librariesPath}</classpathPrefix>
               <mainClass>rd.pdfsearch.AppPdfSearch</mainClass>
             </manifest>
           </archive>
         </configuration>
-
       </plugin>
+
+      <plugin> <!-- Copies dependencies into target/lib folder -->
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${librariesPath}</outputDirectory>
+              <includeScope>compile</includeScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 </project>
