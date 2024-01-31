@@ -59,11 +59,13 @@ public class MainWindow extends JFrame {
         panelNorth = new PanelNorth(this);
         add(panelNorth, BorderLayout.NORTH);
 
+        Dimension minimumSize = new Dimension(100, 100);
         panelCenter = new PanelCenter(this);
-        add(panelCenter, BorderLayout.CENTER);
-
+        panelCenter.setMinimumSize(minimumSize);
         panelSouth = new PanelSouth(this);
-        add(panelSouth, BorderLayout.SOUTH);
+        panelSouth.setMinimumSize(minimumSize);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, panelCenter, panelSouth);
+        add(splitPane, BorderLayout.CENTER);
 
         //Set Font for all child Components
         Map<TextAttribute, Object> fontAttributes = new HashMap<>();
