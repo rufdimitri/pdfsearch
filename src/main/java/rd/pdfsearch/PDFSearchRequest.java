@@ -250,8 +250,7 @@ public class PDFSearchRequest {
             List<String> contents = new ArrayList<>(pageCount);
 
             for (int pageNr = 1; pageNr <= pageCount; pageNr++) {
-                String pageText = pdfTextExtractor.getTextFromPage(pageNr)
-                        .toLowerCase();
+                String pageText = pdfTextExtractor.getTextFromPage(pageNr);
 
                 contents.add(pageText);
             }
