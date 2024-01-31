@@ -16,7 +16,7 @@ public class PanelSouth extends JPanel {
     public final JList<ListItem> outputList;
     public final DefaultListModel<ListItem> outputListModel = new DefaultListModel<>();
     private boolean fixedCellHeightSet = false;
-    private final boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+    private final boolean isOSWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
 
     public PanelSouth(MainWindow mainWindow) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -32,7 +32,7 @@ public class PanelSouth extends JPanel {
                 if (e.getClickCount() == 2) {
                     ListItem selectedValue = outputList.getSelectedValue();
                     if (selectedValue != null && selectedValue.getObject() instanceof Path) {
-                        if (isWindows) {
+                        if (isOSWindows) {
                             try {
                                 Runtime.getRuntime().exec(new String[] {"cmd.exe", "/c", "start", "", selectedValue.getObject().toString()});
                             } catch (IOException ex) {
@@ -51,8 +51,8 @@ public class PanelSouth extends JPanel {
                 mainWindow.panelCenter.taContent.setText(wordPosition.context());
                 mainWindow.panelCenter.taContent.grabFocus();
                 mainWindow.panelCenter.taContent.setCaretPosition(wordPosition.position());
-                mainWindow.panelCenter.taContent.moveCaretPosition(wordPosition.position()  + wordPosition.word().length());
-                //TODO fix  word only found once per page, even if it appears more than once
+                mainWindow.panelCenter.taContent.moveCaretPosition(wordPosition.position() + wordPosition.word().length());
+                //TODO fix word only found once per page, even if it appears more than once
             } else {
                 mainWindow.panelCenter.taContent.setText("");
             }
