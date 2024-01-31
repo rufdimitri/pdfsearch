@@ -101,14 +101,17 @@ public class PDFSearchRequest {
                         }
 
                         if (!searchResult.searchResults().isEmpty()) {
-                            outputQueue.put(new ListItem(String.format("Found %d entries in \"%s\"\n", searchResult.searchResults().size(), file.toAbsolutePath()), file));
+                            outputQueue.put(new ListItem(
+                                    String.format("Found %d entries in \"%s\"\n", searchResult.searchResults().size(), file.toAbsolutePath()),
+                                    file));
                         }
 
                         for (SearchScope scope : searchResult.searchResults()) {
                             for (WordPosition position : scope.getWordPositions()) {
                                 outputQueue.put(new ListItem(
                                         String.format(" - found '%s' at page %d", position.word(), position.pageNumber()),
-                                        pagesContent.get(position.pageNumber()-1)));
+                                        pagesContent.get(position.pageNumber()-1),
+                                        ListItem.Type.WORD_ENTRY));
                             }
                         }
                         return FileVisitResult.CONTINUE;
@@ -119,7 +122,6 @@ public class PDFSearchRequest {
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
-//                        throw new RuntimeException(file.toAbsolutePath().toString(), throwable);
                     }
                 }
 

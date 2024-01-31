@@ -14,6 +14,7 @@ public class PanelCenter extends JPanel {
 
         taContent = new JTextArea();
         taContent.setMargin(new Insets(5,5,5,5));
+        taContent.setEditable(false);
 
         JScrollPane scrollPane = new JScrollPane(taContent);
         add(scrollPane);

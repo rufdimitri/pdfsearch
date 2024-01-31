@@ -63,6 +63,7 @@ public class MainWindow extends JFrame {
         Dimension minimumSize = new Dimension(100, 100);
         panelCenter = new PanelCenter(this);
         panelCenter.setMinimumSize(minimumSize);
+        panelCenter.setPreferredSize(new Dimension(MainWindow.this.getWidth(), MainWindow.this.getHeight() / 3));
         panelSouth = new PanelSouth(this);
         panelSouth.setMinimumSize(minimumSize);
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, panelCenter, panelSouth);
