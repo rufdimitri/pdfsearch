@@ -90,15 +90,12 @@ public class MainWindow extends JFrame {
     }
 
     public void savePreferences() {
+        updatePreferences();
+        JsonUtil.marshallToFile(this.PREFERENCES_FILE, this.preferences);
+    }
+
+    public void updatePreferences() {
         preferences.setSearchLocation(this.panelNorth.tfSearchLocation.getText());
-
-        //add regex quotation (\Q \E) to escape regex special characters that could appear in tfKeywordSeparator
-        String splitter = "\\Q" + this.panelNorth.tfKeywordSeparator.getText() + "\\E";
-
-        List<String> keywords = Arrays.stream(this.panelNorth.tfKeywords.getText().trim().split(splitter))
-                .filter(keyword -> !keyword.isBlank())
-                .map(String::toLowerCase)
-                .toList();
 
         int rangeSize;
         try {
@@ -108,13 +105,21 @@ public class MainWindow extends JFrame {
         }
 
         SearchCriteria searchCriteria = this.panelNorth.rbRange.isSelected()
-                ? new SearchCriteria(keywords, SearchCriteria.WordScopeType.RANGE, rangeSize)
-                : new SearchCriteria(keywords, SearchCriteria.WordScopeType.DOCUMENT, rangeSize);
+                ? new SearchCriteria(getKeywords(), SearchCriteria.WordScopeType.RANGE, rangeSize)
+                : new SearchCriteria(getKeywords(), SearchCriteria.WordScopeType.DOCUMENT, rangeSize);
         preferences.setSearchCriteria(searchCriteria);
 
         preferences.setKeywordsSeparator(this.panelNorth.tfKeywordSeparator.getText());
+    }
 
-        JsonUtil.marshallToFile(this.PREFERENCES_FILE, this.preferences);
+    public List<String> getKeywords() {
+        //add regex quotation (\Q \E) to escape regex special characters that could appear in tfKeywordSeparator
+        String splitter = "\\Q" + this.panelNorth.tfKeywordSeparator.getText() + "\\E";
+
+        return Arrays.stream(this.panelNorth.tfKeywords.getText().trim().split(splitter))
+                .filter(keyword -> !keyword.isBlank())
+                .map(String::toLowerCase)
+                .toList();
     }
 
     private void startDaemons() {

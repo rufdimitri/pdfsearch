@@ -7,7 +7,12 @@ import rd.pdfsearch.model.SearchCriteria;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static rd.pdfsearch.model.SearchCriteria.WordScopeType.DOCUMENT;
 
@@ -23,6 +28,8 @@ public class PanelNorth extends JPanel {
     public final JRadioButton rbRange;
     public final JPanel pnScope;
     public final JLabel lbStatus;
+    private Timer keywordsUpdateTimer;
+    private final JLabel lbKeywords;
 
     public PanelNorth(MainWindow mainWindow) {
         setLayout(new GridBagLayout());
@@ -54,13 +61,38 @@ public class PanelNorth extends JPanel {
         //init keywords row components
         add(new JLabel("Keywords: "), constraintsBuilder.newRow().fillNone().width(1).build());
 
+        KeyAdapter keyAdapterKeywords = new KeyAdapter() {
+            TimerTask lastTask;
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+                System.out.println(System.currentTimeMillis());
+                if (keywordsUpdateTimer == null) keywordsUpdateTimer = new Timer(true);
+                if (lastTask != null) lastTask.cancel();
+
+                lastTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        List<String> keywords = mainWindow.getKeywords();
+                        lbKeywords.setText(String.join("|", keywords));
+                    }
+                };
+                keywordsUpdateTimer.schedule(lastTask, 500);
+            }
+        };
+        keyAdapterKeywords.keyTyped(null);
+
+        this.lbKeywords = new JLabel("");
         this.tfKeywords = new JTextField(String.join(mainWindow.preferences.getKeywordsSeparator(), mainWindow.preferences.getSearchCriteria().getKeywords()));
         add(this.tfKeywords, constraintsBuilder.newCol().fillHorizontal(1).width(1).build());
+        this.tfKeywords.addKeyListener(keyAdapterKeywords);
 
         add(new JLabel("Keywords separator: "), constraintsBuilder.newCol().fillNone().width(1).build());
         this.tfKeywordSeparator = new JTextField(mainWindow.preferences.getKeywordsSeparator());
-        add(this.tfKeywordSeparator, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
+        tfKeywordSeparator.addKeyListener(keyAdapterKeywords);
 
+        add(this.tfKeywordSeparator, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
+        add(lbKeywords, constraintsBuilder.newRow().newCol().fillNone().width(1).build());
         //-------------------------------
         //init scope components
         add(new JLabel("Scope: "), constraintsBuilder.newRow().fillNone().width(1).build());
