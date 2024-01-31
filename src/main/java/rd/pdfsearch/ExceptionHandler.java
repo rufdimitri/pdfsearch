@@ -1,11 +1,6 @@
 package rd.pdfsearch;
 
-import rd.pdfsearch.model.ListItem;
-
 import javax.swing.*;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 
 public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
@@ -33,6 +28,6 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
             System.exit(0);
         }
 
-        mainWindow.panelSouth.writeOutput(exception);
+        mainWindow.panelSouth.writeError(exception);
     }
 }

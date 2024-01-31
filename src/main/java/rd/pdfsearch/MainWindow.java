@@ -3,6 +3,7 @@ package rd.pdfsearch;
 import com.google.gson.reflect.TypeToken;
 import rd.pdfsearch.listeners.MainWindowListener;
 import rd.pdfsearch.model.CachedPdfFile;
+import rd.pdfsearch.model.ListItem;
 import rd.pdfsearch.model.Preferences;
 import rd.pdfsearch.model.SearchCriteria;
 import rd.util.JsonUtil;
@@ -30,7 +31,7 @@ public class MainWindow extends JFrame {
 
     public Preferences preferences;
     public Future<?> fileSearchFuture;
-    public final BlockingQueue<Object> outputQueue = new LinkedBlockingQueue<>(10);
+    public final BlockingQueue<ListItem> outputQueue = new LinkedBlockingQueue<>(10);
     public final BlockingQueue<Throwable> errorQueue = new LinkedBlockingQueue<>(10);
     public Map<Integer, List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode = new HashMap<>();
     private PDFSearchRequest searchRequest;
@@ -119,12 +120,12 @@ public class MainWindow extends JFrame {
         Thread outputReader = new Thread(() -> {
             while (true) {
                 try {
-                    Object outputObject = outputQueue.poll(100, TimeUnit.MILLISECONDS);
+                    ListItem outputObject = outputQueue.poll(100, TimeUnit.MILLISECONDS);
                     if (!Objects.isNull(outputObject)) {
                         panelSouth.writeOutput(outputObject);
                     }
                 } catch (Exception exception) {
-                    panelSouth.writeOutput(exception);
+                    panelSouth.writeError(exception);
                 }
             }
         });
@@ -135,12 +136,12 @@ public class MainWindow extends JFrame {
         Thread errorReader = new Thread(() -> {
             while (true) {
                 try {
-                    Object outputObject = errorQueue.poll(100, TimeUnit.MILLISECONDS);;
+                    Throwable outputObject = errorQueue.poll(100, TimeUnit.MILLISECONDS);;
                     if (!Objects.isNull(outputObject)) {
-                        panelSouth.writeOutput(outputObject);
+                        panelSouth.writeError(outputObject);
                     }
                 } catch (Exception exception) {
-                    panelSouth.writeOutput(exception);
+                    panelSouth.writeError(exception);
                 }
             }
         });

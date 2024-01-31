@@ -13,13 +13,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.function.Consumer;
 
 public class PDFSearchRequest {
-    private final BlockingQueue<Object> outputQueue;
+    private final BlockingQueue<ListItem> outputQueue;
     private final BlockingQueue<Throwable> errorQueue;
     private Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode;
     private Consumer<String> updateStatus;
     private Thread searchThread;
 
-    public PDFSearchRequest(BlockingQueue<Object> outputQueue,
+    public PDFSearchRequest(BlockingQueue<ListItem> outputQueue,
                             BlockingQueue<Throwable> errorQueue,
                             Map<Integer,List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode,
                             Consumer<String> updateStatus
@@ -30,7 +30,7 @@ public class PDFSearchRequest {
         this.updateStatus = updateStatus;
     }
 
-    public PDFSearchRequest(BlockingQueue<Object> outputQueue, BlockingQueue<Throwable> errorQueue) {
+    public PDFSearchRequest(BlockingQueue<ListItem> outputQueue, BlockingQueue<Throwable> errorQueue) {
         this.outputQueue = Objects.requireNonNull(outputQueue);
         this.errorQueue = Objects.requireNonNull(errorQueue);
         this.cachedFilesPerFileIdentityHashCode = new HashMap<>();
@@ -43,7 +43,7 @@ public class PDFSearchRequest {
     public void interruptSearch() {
         synchronized (this) {
             try {
-                outputQueue.put("Search canceled");
+                outputQueue.put(new ListItem("Search canceled"));
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             } finally {
@@ -80,9 +80,9 @@ public class PDFSearchRequest {
                         if (!Files.isRegularFile(file) || !file.toString().endsWith(fileExtension))
                             return FileVisitResult.CONTINUE;
 
+                        List<String> pagesContent;
                         SearchResult searchResult;
                         try {
-                            List<String> pagesContent;
                             CachedPdfFile cachedPdfFile = getCachedPdfFile(file);
                             if (cachedPdfFile == null) {
                                 updateStatus.accept("Searching in " + file.toAbsolutePath().toString() + "...");
@@ -106,7 +106,9 @@ public class PDFSearchRequest {
 
                         for (SearchScope scope : searchResult.searchResults()) {
                             for (WordPosition position : scope.getWordPositions()) {
-                                outputQueue.put(String.format(" - found '%s' at page %d", position.word(), position.pageNumber()));
+                                outputQueue.put(new ListItem(
+                                        String.format(" - found '%s' at page %d", position.word(), position.pageNumber()),
+                                        pagesContent.get(position.pageNumber()-1)));
                             }
                         }
                         return FileVisitResult.CONTINUE;

@@ -30,12 +30,12 @@ public class PanelSouth extends JPanel {
                 super.mouseClicked(e);
                 if (e.getClickCount() == 2) {
                     ListItem selectedValue = outputList.getSelectedValue();
-                    if (selectedValue != null && selectedValue.getPath() != null) {
+                    if (selectedValue != null && selectedValue.getObject() instanceof Path) {
                         if (isWindows) {
                             try {
-                                Runtime.getRuntime().exec(new String[] {"cmd.exe", "/c", "start", "", selectedValue.getPath().toString()});
+                                Runtime.getRuntime().exec(new String[] {"cmd.exe", "/c", "start", "", selectedValue.getObject().toString()});
                             } catch (IOException ex) {
-                                PanelSouth.this.writeOutput(ex);
+                                PanelSouth.this.writeOutput(new ListItem(ex));
                             }
                         }
                     }
@@ -43,6 +43,9 @@ public class PanelSouth extends JPanel {
             }
         });
 
+        outputList.addListSelectionListener(listSelectionEvent -> {
+            ListItem selectedItem = outputList.getSelectedValue();
+        });
 
         JScrollPane scrollPane = new JScrollPane(outputList);
         add(scrollPane);
@@ -50,26 +53,20 @@ public class PanelSouth extends JPanel {
 
     /**
      * Add new element to output list
-     * @param object (NotNull) object of one of types: Throwable, String, Path, ListItem
      *
      */
-    public void writeOutput(Object object) {
-        Objects.requireNonNull(object);
-        ListItem element;
-        if (object instanceof Throwable) {
-            element = new ListItem((Throwable) object);
-        } else if (object instanceof String) {
-            element = new ListItem((String) object);
-        } else if (object instanceof Path) {
-            element = new ListItem((Path) object);
-        } else if (object instanceof ListItem) {
-            element = (ListItem) object;
-        } else {
-            element = new ListItem(new RuntimeException("Unknown output type: " + object.getClass().getName()));
-        }
+    public void writeOutput(ListItem listItem) {
+        Objects.requireNonNull(listItem);
+
         synchronized (outputListModel) {
-            outputListModel.addElement(element);
+            outputListModel.addElement(listItem);
         }
+    }
+
+    public void writeError(Throwable throwable) {
+        Objects.requireNonNull(throwable);
+        ListItem listItem = new ListItem(throwable);
+        writeOutput(listItem);
     }
 
     public void clearOutput() {

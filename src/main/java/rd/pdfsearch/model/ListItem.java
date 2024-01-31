@@ -1,14 +1,8 @@
 package rd.pdfsearch.model;
 
-import java.nio.file.Path;
-
 public class ListItem {
-    private final Path path;
+    private final Object object;
     private final String text;
-
-    public ListItem(Path path) {
-        this(path.getFileName().toString() + " : " + path.getParent().toAbsolutePath().toString(), path);
-    }
 
     public ListItem(String text) {
         this(text, null);
@@ -16,13 +10,13 @@ public class ListItem {
 
     public ListItem (Throwable t) {
         this.text = "Error: " + getAllExceptionCauses(new StringBuilder(), t).toString();
-        this.path = null;
+        this.object = t;
         t.printStackTrace(System.err);
     }
 
-    public ListItem(String text, Path path) {
+    public ListItem(String text, Object object) {
         this.text = text;
-        this.path = path;
+        this.object = object;
     }
 
     @Override
@@ -30,8 +24,8 @@ public class ListItem {
         return text;
     }
 
-    public Path getPath() {
-        return path;
+    public Object getObject() {
+        return object;
     }
 
     public String getText() {
