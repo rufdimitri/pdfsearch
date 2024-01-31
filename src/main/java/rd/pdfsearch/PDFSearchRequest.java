@@ -195,10 +195,13 @@ public class PDFSearchRequest {
 
             for (String word : searchCriteria.getKeywords()) {
                 String wordLowerCase = word.toLowerCase();
-                int position = pageTextLowerCase.indexOf(wordLowerCase);
-                if (position < 0) continue;
-
-                searchResults.add(new WordPosition(word, position, pagePosition, pageNr, pageText));
+                int position = -1;
+                do {
+                    position = pageTextLowerCase.indexOf(wordLowerCase, position+1);
+                    if (position > 0) {
+                        searchResults.add(new WordPosition(word, position, pagePosition, pageNr, pageText));
+                    }
+                } while (position > 0);
             }
 
             pagePosition += pageText.length();

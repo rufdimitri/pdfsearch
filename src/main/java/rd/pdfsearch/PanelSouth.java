@@ -46,13 +46,12 @@ public class PanelSouth extends JPanel {
 
         outputList.addListSelectionListener(listSelectionEvent -> {
             ListItem selectedItem = outputList.getSelectedValue();
-            if (selectedItem.getObjectType() == ListItem.Type.WORD_POSITION
+            if (selectedItem != null && selectedItem.getObjectType() == ListItem.Type.WORD_POSITION
                     && selectedItem.getObject() instanceof WordPosition wordPosition) {
                 mainWindow.panelCenter.taContent.setText(wordPosition.context());
                 mainWindow.panelCenter.taContent.grabFocus();
                 mainWindow.panelCenter.taContent.setCaretPosition(wordPosition.position());
                 mainWindow.panelCenter.taContent.moveCaretPosition(wordPosition.position() + wordPosition.word().length());
-                //TODO fix word only found once per page, even if it appears more than once
             } else {
                 mainWindow.panelCenter.taContent.setText("");
             }
