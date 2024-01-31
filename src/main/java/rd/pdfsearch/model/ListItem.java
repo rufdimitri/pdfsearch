@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import static rd.pdfsearch.model.ListItem.Type.*;
 
 public class ListItem {
-    static public enum Type {FILE, WORD_ENTRY, ERROR, OTHER};
+    static public enum Type {FILE, WORD_POSITION, ERROR, OTHER};
     private final Object object;
     private final String text;
     private final Type objectType;

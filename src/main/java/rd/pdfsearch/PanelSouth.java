@@ -1,6 +1,7 @@
 package rd.pdfsearch;
 
 import rd.pdfsearch.model.ListItem;
+import rd.pdfsearch.model.WordPosition;
 import rd.util.SwingUtil;
 
 import javax.swing.*;
@@ -45,11 +46,10 @@ public class PanelSouth extends JPanel {
 
         outputList.addListSelectionListener(listSelectionEvent -> {
             ListItem selectedItem = outputList.getSelectedValue();
-            if (selectedItem.getObjectType() == ListItem.Type.WORD_ENTRY && selectedItem.getObject() instanceof String) {
-                String wordContext = (String)selectedItem.getObject();
-                mainWindow.panelCenter.taContent.setText(wordContext);
-                //TODO select word in context
-                //TODO fix pageContent is always lowercase
+            if (selectedItem.getObjectType() == ListItem.Type.WORD_POSITION && selectedItem.getObject() instanceof WordPosition) {
+                WordPosition wordPosition = (WordPosition) selectedItem.getObject();
+                mainWindow.panelCenter.taContent.setText(wordPosition.context());
+                //TODO select (mark) word in context
                 //TODO fix  word only found once per page, even if it appears more than once
             } else {
                 mainWindow.panelCenter.taContent.setText("");

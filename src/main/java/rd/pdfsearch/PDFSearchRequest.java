@@ -110,8 +110,8 @@ public class PDFSearchRequest {
                             for (WordPosition position : scope.getWordPositions()) {
                                 outputQueue.put(new ListItem(
                                         String.format(" - found '%s' at page %d", position.word(), position.pageNumber()),
-                                        pagesContent.get(position.pageNumber()-1),
-                                        ListItem.Type.WORD_ENTRY));
+                                        position,
+                                        ListItem.Type.WORD_POSITION));
                             }
                         }
                         return FileVisitResult.CONTINUE;
@@ -198,7 +198,7 @@ public class PDFSearchRequest {
                 int position = pageTextLowerCase.indexOf(wordLowerCase);
                 if (position < 0) continue;
 
-                searchResults.add(new WordPosition(word, position, pagePosition, pageNr));
+                searchResults.add(new WordPosition(word, position, pagePosition, pageNr, pageText));
             }
 
             pagePosition += pageText.length();
