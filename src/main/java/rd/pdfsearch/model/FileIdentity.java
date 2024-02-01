@@ -9,7 +9,19 @@ import java.util.Objects;
  * @param size size of the file in bytes
  * @param modifiedDate when the file was modified
  */
-public record FileIdentity(String filename, String filepath, long size, long modifiedDate) {
+public class FileIdentity {
+    private String filename;
+    private String filepath;
+    private long size;
+    private long modifiedDate;
+
+    public FileIdentity(String filename, String filepath, long size, long modifiedDate) {
+        this.filename = filename;
+        this.filepath = filepath;
+        this.size = size;
+        this.modifiedDate = modifiedDate / 1000 * 1000; //trim 3 last digits, to erase milliseconds, to avoid problems with different file systems
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
