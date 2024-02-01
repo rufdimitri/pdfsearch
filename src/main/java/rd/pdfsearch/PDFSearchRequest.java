@@ -34,7 +34,7 @@ public class PDFSearchRequest {
     public PDFSearchRequest(BlockingQueue<ListItem> outputQueue, BlockingQueue<Throwable> errorQueue) {
         this.outputQueue = Objects.requireNonNull(outputQueue);
         this.errorQueue = Objects.requireNonNull(errorQueue);
-        this.cachedFilesPerFileIdentityHashCode = Concurrent.SynchronizedMap.of(new HashMap<>());
+        this.cachedFilesPerFileIdentityHashCode = Concurrent.concurrentMap(new HashMap<>());
         this.updateStatus = (text) -> {};
     }
 

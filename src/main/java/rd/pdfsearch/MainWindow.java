@@ -32,7 +32,7 @@ public class MainWindow extends JFrame {
     public Preferences preferences;
     public final BlockingQueue<ListItem> outputQueue = new LinkedBlockingQueue<>(10);
     public final BlockingQueue<Throwable> errorQueue = new LinkedBlockingQueue<>(10);
-    public Map<Integer, List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode = Concurrent.SynchronizedMap.of(new HashMap<>());
+    public Map<Integer, List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode = Concurrent.concurrentMap(new HashMap<>());
     private PDFSearchRequest searchRequest;
 
     public MainWindow(String title, int initWidth, int initHeight) {

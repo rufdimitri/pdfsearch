@@ -28,7 +28,7 @@ public class BtSearchActionListener implements ActionListener {
             mainWindow.panelSouth.clearOutput();
             mainWindow.savePreferences();
             if (mainWindow.cachedFilesPerFileIdentityHashCode == null || mainWindow.cachedFilesPerFileIdentityHashCode.isEmpty()) {
-                mainWindow.cachedFilesPerFileIdentityHashCode = Concurrent.SynchronizedMap.of(
+                mainWindow.cachedFilesPerFileIdentityHashCode = Concurrent.concurrentMap(
                         JsonUtil.unmarshallFromFileOrDefault(
                                 mainWindow.CACHED_PDF_FILENAME,
                                 new TypeToken<>() {},
