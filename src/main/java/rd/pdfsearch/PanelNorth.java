@@ -2,7 +2,6 @@ package rd.pdfsearch;
 
 import com.ztz.gridbagconstraintsbuilder.GridBagContraintsBuilder;
 import rd.pdfsearch.listeners.BtSearchActionListener;
-import rd.pdfsearch.model.SearchCriteria;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,8 +10,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import static rd.pdfsearch.model.SearchCriteria.WordScopeType.DOCUMENT;
 
@@ -28,8 +29,10 @@ public class PanelNorth extends JPanel {
     public final JRadioButton rbRange;
     public final JPanel pnScope;
     public final JLabel lbStatus;
-    private Timer keywordsUpdateTimer;
-    private final JLabel lbKeywords;
+    private final JLabel lbKeywords1;
+    private final JLabel lbKeywords2;
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture<?> lbKeywordsUpdateTask;
 
     public PanelNorth(MainWindow mainWindow) {
         setLayout(new GridBagLayout());
@@ -62,26 +65,21 @@ public class PanelNorth extends JPanel {
         add(new JLabel("Keywords: "), constraintsBuilder.newRow().fillNone().width(1).build());
 
         KeyAdapter keyAdapterKeywords = new KeyAdapter() {
-            TimerTask lastTask;
-
             @Override
             public void keyTyped(KeyEvent e) {
-                if (keywordsUpdateTimer == null) keywordsUpdateTimer = new Timer(true);
-                if (lastTask != null) lastTask.cancel();
-
-                lastTask = new TimerTask() {
-                    @Override
-                    public void run() {
+                if (PanelNorth.this.lbKeywordsUpdateTask == null || PanelNorth.this.lbKeywordsUpdateTask.isDone()) {
+                    PanelNorth.this.lbKeywordsUpdateTask = scheduledExecutorService.schedule(() -> {
                         List<String> keywords = mainWindow.getKeywords();
-                        lbKeywords.setText("[" + String.join("|", keywords) + "]: " + keywords.size() + " keywords found");
-                    }
-                };
-                keywordsUpdateTimer.schedule(lastTask, 500);
+                        lbKeywords1.setText(keywords.size() + " keywords found:");
+                        lbKeywords2.setText("[" + String.join("|", keywords) + "]");
+                    }, 200, TimeUnit.MILLISECONDS);
+                }
             }
         };
         keyAdapterKeywords.keyTyped(null);
 
-        this.lbKeywords = new JLabel("");
+        this.lbKeywords1 = new JLabel("");
+        this.lbKeywords2 = new JLabel("");
         this.tfKeywords = new JTextField(String.join(mainWindow.preferences.getKeywordsSeparator(), mainWindow.preferences.getSearchCriteria().getKeywords()));
         add(this.tfKeywords, constraintsBuilder.newCol().fillHorizontal(1).width(1).build());
         this.tfKeywords.addKeyListener(keyAdapterKeywords);
@@ -91,7 +89,8 @@ public class PanelNorth extends JPanel {
         tfKeywordSeparator.addKeyListener(keyAdapterKeywords);
 
         add(this.tfKeywordSeparator, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
-        add(lbKeywords, constraintsBuilder.newRow().newCol().fillNone().width(1).build());
+        add(lbKeywords1, constraintsBuilder.newRow().fillNone().width(1).build());
+        add(lbKeywords2, constraintsBuilder.newCol().fillHorizontal(1).width(0).build());
         //-------------------------------
         //init scope components
         add(new JLabel("Scope: "), constraintsBuilder.newRow().fillNone().width(1).build());
