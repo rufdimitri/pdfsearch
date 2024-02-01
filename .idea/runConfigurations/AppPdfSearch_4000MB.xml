@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="AppPdfSearch 3000MB" type="Application" factoryName="Application">
+  <configuration default="false" name="AppPdfSearch 4000MB" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="rd.pdfsearch.AppPdfSearch" />
     <module name="pdfSearch" />
-    <option name="VM_PARAMETERS" value="-Xmx3000m" />
+    <option name="VM_PARAMETERS" value="-Xmx4000m" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="rd.util.*" />
