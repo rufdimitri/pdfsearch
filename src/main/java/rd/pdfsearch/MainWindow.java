@@ -6,6 +6,7 @@ import rd.pdfsearch.model.CachedPdfFile;
 import rd.pdfsearch.model.ListItem;
 import rd.pdfsearch.model.Preferences;
 import rd.pdfsearch.model.SearchCriteria;
+import rd.util.Concurrent;
 import rd.util.JsonUtil;
 import rd.util.SwingUtil;
 
@@ -13,10 +14,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.io.FileNotFoundException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -30,10 +30,9 @@ public class MainWindow extends JFrame {
     public final int initHeight;
 
     public Preferences preferences;
-    public Future<?> fileSearchFuture;
     public final BlockingQueue<ListItem> outputQueue = new LinkedBlockingQueue<>(10);
     public final BlockingQueue<Throwable> errorQueue = new LinkedBlockingQueue<>(10);
-    public Map<Integer, List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode = new HashMap<>();
+    public Map<Integer, List<CachedPdfFile>> cachedFilesPerFileIdentityHashCode = Concurrent.SynchronizedMap.of(new HashMap<>());
     private PDFSearchRequest searchRequest;
 
     public MainWindow(String title, int initWidth, int initHeight) {

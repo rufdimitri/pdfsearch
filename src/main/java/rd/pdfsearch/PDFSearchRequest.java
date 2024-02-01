@@ -3,6 +3,7 @@ package rd.pdfsearch;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.parser.PdfTextExtractor;
 import rd.pdfsearch.model.*;
+import rd.util.Concurrent;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class PDFSearchRequest {
     public PDFSearchRequest(BlockingQueue<ListItem> outputQueue, BlockingQueue<Throwable> errorQueue) {
         this.outputQueue = Objects.requireNonNull(outputQueue);
         this.errorQueue = Objects.requireNonNull(errorQueue);
-        this.cachedFilesPerFileIdentityHashCode = new HashMap<>();
+        this.cachedFilesPerFileIdentityHashCode = Concurrent.SynchronizedMap.of(new HashMap<>());
         this.updateStatus = (text) -> {};
     }
 

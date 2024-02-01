@@ -27,7 +27,6 @@ public class MainWindowListener implements WindowListener {
             this.mainWindow.updateStatus("Saving settings and closing...");
             Optional.ofNullable(mainWindow.getSearchRequest()).ifPresent(PDFSearchRequest::interruptSearch);
             this.mainWindow.savePreferences();
-            Optional.ofNullable(this.mainWindow.fileSearchFuture).ifPresent((future) -> future.cancel(true));
             if (!mainWindow.cachedFilesPerFileIdentityHashCode.isEmpty()) {
                 JsonUtil.marshallToFile(mainWindow.CACHED_PDF_FILENAME, mainWindow.cachedFilesPerFileIdentityHashCode);
             }

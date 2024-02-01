@@ -4,13 +4,13 @@ import com.google.gson.reflect.TypeToken;
 import rd.pdfsearch.MainWindow;
 import rd.pdfsearch.PDFSearchRequest;
 import rd.pdfsearch.model.SearchCriteria;
+import rd.util.Concurrent;
 import rd.util.JsonUtil;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class BtSearchActionListener implements ActionListener {
@@ -28,8 +28,11 @@ public class BtSearchActionListener implements ActionListener {
             mainWindow.panelSouth.clearOutput();
             mainWindow.savePreferences();
             if (mainWindow.cachedFilesPerFileIdentityHashCode == null || mainWindow.cachedFilesPerFileIdentityHashCode.isEmpty()) {
-                mainWindow.cachedFilesPerFileIdentityHashCode = JsonUtil.unmarshallFromFileOrDefault(mainWindow.CACHED_PDF_FILENAME, new TypeToken<>() {
-                }, new HashMap<>());
+                mainWindow.cachedFilesPerFileIdentityHashCode = Concurrent.SynchronizedMap.of(
+                        JsonUtil.unmarshallFromFileOrDefault(
+                                mainWindow.CACHED_PDF_FILENAME,
+                                new TypeToken<>() {},
+                                new HashMap<>()));
             }
             String filename = mainWindow.panelNorth.tfSearchLocation.getText().replaceAll("\"", "");
 
