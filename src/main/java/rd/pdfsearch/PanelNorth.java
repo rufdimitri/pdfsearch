@@ -66,7 +66,6 @@ public class PanelNorth extends JPanel {
 
             @Override
             public void keyTyped(KeyEvent e) {
-                System.out.println(System.currentTimeMillis());
                 if (keywordsUpdateTimer == null) keywordsUpdateTimer = new Timer(true);
                 if (lastTask != null) lastTask.cancel();
 
@@ -74,7 +73,7 @@ public class PanelNorth extends JPanel {
                     @Override
                     public void run() {
                         List<String> keywords = mainWindow.getKeywords();
-                        lbKeywords.setText(String.join("|", keywords));
+                        lbKeywords.setText("[" + String.join("|", keywords) + "]: " + keywords.size() + " keywords found");
                     }
                 };
                 keywordsUpdateTimer.schedule(lastTask, 500);

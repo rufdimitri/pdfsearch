@@ -53,7 +53,7 @@ public class MainWindow extends JFrame {
         } catch (Exception exception) {
             if (exception.getCause().getClass() != FileNotFoundException.class) throw exception;
 
-            preferences = Preferences.builder().keywordsSeparator(", ").rangeSize(200).build();
+            preferences = Preferences.builder().keywordsSeparator(" ").rangeSize(200).build();
         }
 
         panelNorth = new PanelNorth(this);
