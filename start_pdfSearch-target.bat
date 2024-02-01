@@ -1,2 +1,2 @@
-java -jar target/pdfSearch-1.0-SNAPSHOT.jar -Xmx3000m
+java -jar target/pdfSearch-240201.jar -Xmx4000m
 pause

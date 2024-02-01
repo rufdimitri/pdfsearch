@@ -4,7 +4,7 @@
 
   <groupId>rd.pdfsearch</groupId>
   <artifactId>pdfSearch</artifactId>
-  <version>240131</version>
+  <version>240201</version>
   <packaging>jar</packaging>
 
   <name>pdfSearch</name>
@@ -40,29 +40,6 @@
 
   <build>
     <plugins>
-      <plugin> <!-- creates ...jar-with-dependencies.jar file where all dependencies are included-->
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>pdfSearch-with-dependencies</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <archive>
-                <manifest>
-                  <mainClass>rd.pdfsearch.AppPdfSearch</mainClass>
-                </manifest>
-              </archive>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin> <!-- creates Manifest with classpath and Main-class inside .jar  -->
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.3.0</version>
@@ -92,7 +69,6 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
   </build>
 </project>
