@@ -97,8 +97,8 @@ public class PanelNorth extends JPanel {
         //init scope components
         add(new JLabel("Scope: "), constraintsBuilder.newRow().fillNone().width(1).build());
 
-        this.pnScope = new JPanel(new FlowLayout());
-        add(this.pnScope, constraintsBuilder.newCol().fillNone().width(1).build());
+        this.pnScope = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        add(this.pnScope, constraintsBuilder.newCol().fillHorizontal(1).width(1).build());
         ButtonGroup grScope = new ButtonGroup();
         //add radiobutton Document
         JRadioButton rbDocument = new JRadioButton("Document", mainWindow.preferences.getSearchCriteria().getWordScopeType() == DOCUMENT);
@@ -136,7 +136,7 @@ public class PanelNorth extends JPanel {
         //-------------------------------
         //init status bar
         this.lbStatus = new JLabel(" ");
-        add(this.lbStatus, constraintsBuilder.newRow().fillHorizontal(1).width(0).build());
+        add(this.lbStatus, constraintsBuilder.newRow().width(0).build());
     }
 
     @Override
