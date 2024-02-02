@@ -9,11 +9,7 @@ import java.util.Objects;
  * @param size size of the file in bytes
  * @param modifiedDate when the file was modified
  */
-public class FileIdentity {
-    private String filename;
-    private String filepath;
-    private long size;
-    private long modifiedDate;
+public record FileIdentity(String filename, String filepath, long size, long modifiedDate) {
 
     public FileIdentity(String filename, String filepath, long size, long modifiedDate) {
         this.filename = filename;
