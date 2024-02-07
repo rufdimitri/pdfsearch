@@ -1,5 +1,7 @@
 Features to implement (TODO):
 - add cancel button to stop search
+- show number of found files / entries
+- (toggleable) instead of words show found scopes when type of scope "Range"
 - check if cache was updated and only then save it to the file
 - change the way words are selected in central-text-area, make it possible to go through list of results using up/down arrows. Currenty it loses focus upon selection.
 - Open a file not-only on double-click but also if Enter key was pressed.
