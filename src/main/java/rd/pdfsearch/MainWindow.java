@@ -75,6 +75,36 @@ public class MainWindow extends JFrame {
         Font font1 = Font.getFont(fontAttributes);
         SwingUtil.changeFontRecursive(this, font1);
 
+        //create menu
+        //Create the menu bar.
+        JMenuBar menuBar = new JMenuBar();
+
+        //Build the first menu.
+        JMenu menu = new JMenu("Help");
+        menuBar.add(menu);
+
+        //a group of JMenuItems
+        JMenuItem helpItem = new JMenuItem("Help");
+        helpItem.addActionListener(event -> {
+            JOptionPane.showMessageDialog(null, "This program is used to search through .pdf files. \n"
+                + "• Choose a folder where pdf files are \n"
+                + "• Type in keywords that a pdf file should contain. Use keyword separator symbol to split different keywords (by default - space) \n"
+                + "• Choose scope type: \n  - Document - find files that contain all of the keywords \n"
+                + "  - Range - find files where the keywords are within defined range of characters \n"
+                + "• Click Search button to start search \n"
+                + "• Check results below, click on a word to see it's context, double-click on a file to open it."
+            );
+        });
+        menu.add(helpItem);
+
+        JMenuItem aboutItem = new JMenuItem("About");
+        aboutItem.addActionListener(event -> {
+            JOptionPane.showMessageDialog(null, "Author: Dimitri Ruf. \nCheck out my github: \ngithub.com/rufdimitri");
+        });
+        menu.add(aboutItem);
+
+        this.setJMenuBar(menuBar);
+
         startDaemons();
 
         setVisible(true);

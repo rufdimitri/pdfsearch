@@ -121,10 +121,6 @@ public class PanelNorth extends JPanel {
                 });
             });
         }
-        //add help label
-        JLabel lbScopeHelp = new JLabel("(?)");
-        lbScopeHelp.setToolTipText("Define scope, where the keywords should be: 1) in the same Document or 2) within a Range of n characters between words");
-        this.pnScope.add(lbScopeHelp);
 
         //-------------------------------
         //init search button
