@@ -2,6 +2,7 @@ package rd.pdfsearch;
 
 import com.ztz.gridbagconstraintsbuilder.GridBagContraintsBuilder;
 import rd.pdfsearch.listeners.BtSearchActionListener;
+import rd.pdfsearch.listeners.BtStopActionListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,6 +24,7 @@ public class PanelNorth extends JPanel {
     public final JTextField tfKeywords;
     public final JTextField tfKeywordSeparator;
     public final JButton btSearch;
+    public final JButton btStop;
     public final MainWindow mainWindow;
     public final JFileChooser fileChooser = new JFileChooser();
     public final JTextField tfRange;
@@ -130,7 +132,13 @@ public class PanelNorth extends JPanel {
         //-------------------------------
         //init status bar
         this.lbStatus = new JLabel(" ");
-        add(this.lbStatus, constraintsBuilder.newRow().width(0).build());
+        add(this.lbStatus, constraintsBuilder.newRow().fillNone().width(3).build());
+
+        //Stop button
+        this.btStop = new JButton("Stop");
+        this.btStop.addActionListener(new BtStopActionListener(mainWindow));
+        btStop.setEnabled(false);
+        add(this.btStop, constraintsBuilder.newCol().fillHorizontal(0.1).width(1).build());
     }
 
     @Override

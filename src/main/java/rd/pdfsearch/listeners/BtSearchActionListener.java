@@ -23,6 +23,7 @@ public class BtSearchActionListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         SwingUtilities.invokeLater(() -> {
+            mainWindow.panelNorth.btStop.setEnabled(true);
             mainWindow.updateStatus("Search started. Loading caches.");
             mainWindow.panelNorth.btSearch.setEnabled(false);
             mainWindow.panelSouth.clearOutput();
