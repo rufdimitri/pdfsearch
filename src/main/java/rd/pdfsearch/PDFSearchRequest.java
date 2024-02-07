@@ -1,7 +1,8 @@
 package rd.pdfsearch;
 
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.parser.PdfTextExtractor;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import rd.pdfsearch.model.*;
 import rd.util.Concurrent;
 
@@ -247,17 +248,18 @@ public class PDFSearchRequest {
      */
     public List<String> getPdfPagesContent(Path file) {
         File src = file.toFile();
+        try (PDDocument pdfDoc = Loader.loadPDF(src)) {
+            PDFTextStripper textStripper = new PDFTextStripper();
 
-        try (PdfReader pdfReader = new PdfReader(src.getAbsolutePath())) {
-            int pageCount = pdfReader.getNumberOfPages();
-            PdfTextExtractor pdfTextExtractor = new PdfTextExtractor(pdfReader);
+            int pageCount = pdfDoc.getNumberOfPages();
             List<String> contents = new ArrayList<>(pageCount);
 
             for (int pageNr = 1; pageNr <= pageCount; pageNr++) {
-                String pageText = pdfTextExtractor.getTextFromPage(pageNr);
-
-                contents.add(pageText);
+                textStripper.setStartPage(pageNr);
+                textStripper.setEndPage(pageNr+1);
+                contents.add(textStripper.getText(pdfDoc));
             }
+
             return contents;
         } catch (Exception e) {
             throw new RuntimeException(file.toAbsolutePath().toString(), e);

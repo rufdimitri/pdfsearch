@@ -4,7 +4,7 @@
 
   <groupId>rd.pdfsearch</groupId>
   <artifactId>pdfSearch</artifactId>
-  <version>240201</version>
+  <version>240207</version>
   <packaging>jar</packaging>
 
   <name>pdfSearch</name>
@@ -23,11 +23,11 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
     <dependency>
-      <groupId>com.github.librepdf</groupId>
-      <artifactId>openpdf</artifactId>
-      <version>1.3.33</version>
-      <scope>compile</scope>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+      <version>3.0.1</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
     <dependency>
